@@ -27,8 +27,8 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this._setSlideWidth();
-      this._initSlider();
     });
+    this._initSlider();
   },
   beforeDestroy() {
     this.slider.destroy();

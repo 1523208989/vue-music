@@ -12,15 +12,17 @@ export default {
       type: Array,
       default: [],
     },
-    imgLoad:{
-      type:Boolean,
-      default:false
-    }
+    imgLoad: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
-    setTimeout(() => {
-      this._initScroll();
-    }, 20);
+    this._initScroll();
+    this.$nextTick((_) => {
+      this._refresh();
+    });
+
   },
   methods: {
     _initScroll() {
@@ -40,15 +42,15 @@ export default {
         this._refresh();
       });
     },
-    imgLoad(){
+    imgLoad() {
       this._refresh();
-    }
+    },
   },
 };
 </script>
 
 <style lang='less' scope>
-.scroll-wrapper{
+.scroll-wrapper {
   flex: 1;
   overflow: hidden;
 }

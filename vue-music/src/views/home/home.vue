@@ -4,6 +4,7 @@
       <slide v-if="slideApi.length" :content="slideApi" @imgLoad="imgLoad"></slide>
       <p class="hotSongs">❤热门推荐歌单</p>
       <song-list :songList="songListApi"></song-list>
+      <loading v-show="!songListApi.length"></loading>
     </div>
   </scroll>
 </template>
@@ -14,6 +15,7 @@ import Slide from "./homeSlide";
 import slideRequest from "api/home/slide";
 import songListRequest from "api/home/songList";
 import SongList from "./homeSongList";
+import Loading from 'components/loading'
 export default {
   data() {
     return {
@@ -30,13 +32,13 @@ export default {
     _getSlideApi() {
       slideRequest().then((res) => {
         console.log(res);
-        this.slideApi = res.data.data.banner;
+          this.slideApi = res.data.data.banner;
       });
     },
     _getSongListApi() {
       songListRequest().then((res) => {
         console.log(res);
-        this.songListApi = res.data.data.list;
+          this.songListApi = res.data.data.list;
       });
     },
     imgLoad() {
@@ -47,13 +49,14 @@ export default {
     Slide,
     SongList,
     Scroll,
+    Loading
   },
 };
 </script>
 
 <style lang='less'>
 #home {
-  margin: 5px auto;
+  margin: 0 auto;
   .hotSongs {
     text-align: center;
     color: @color;

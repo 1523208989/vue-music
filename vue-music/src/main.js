@@ -11,9 +11,8 @@ import 'assets/style/class.less'
 Vue.config.productionTip = false
 FastClick.attach(document.body)
 Vue.use(VueLazyLoad, {
-  preLoad: 1.3,
-  attempt: 1,
-  loading: './src/assets/image/logo/logo.png'
+
+  loading: require('assets/image/logo/logo.png')
 })
 
 
