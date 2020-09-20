@@ -1,32 +1,28 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <div id="App">
+    <Header></Header>
+    <NavBar></NavBar>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
+  </div>  
 </template>
 
-<style lang='less'>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: @color;
-}
+<script>
+import Header from "common/header";
+import NavBar from "common/navBar";
+export default {
+  components: {
+    Header,
+    NavBar,
+  },
+};
+</script>
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: @color1;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+<style lang='less' scope>
+#App{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

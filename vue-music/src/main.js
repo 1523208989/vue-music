@@ -2,8 +2,20 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import VueLazyLoad from 'vue-lazyload'
+import FastClick from 'fastclick'
+import 'assets/style/init.less'
+import 'assets/style/class.less'
+
 
 Vue.config.productionTip = false
+FastClick.attach(document.body)
+Vue.use(VueLazyLoad, {
+  preLoad: 1.3,
+  attempt: 1,
+  loading: './src/assets/image/logo/logo.png'
+})
+
 
 new Vue({
   router,
