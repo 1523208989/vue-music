@@ -31,7 +31,12 @@ export default {
   justify-content: space-around;
   align-items: center;
   font-size: @sizexs;
-  line-height: 30px;
+  line-height: 26px;
   color: @color1;
+  .path {
+    color: @color;
+    border-top: solid 2px transparent;
+    border-bottom: 2px solid @color;
+  }
 }
 </style>

@@ -5,10 +5,6 @@ import store from './store'
 import VueLazyLoad from 'vue-lazyload'
 import FastClick from 'fastclick'
 import 'assets/style/init.less'
-import 'assets/style/class.less'
-
-
-
 
 Vue.config.productionTip = false
 FastClick.attach(document.body)

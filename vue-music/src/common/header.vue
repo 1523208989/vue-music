@@ -3,7 +3,7 @@
     <div class="HLeft"></div>
     <div class="HMiddle">
       <img src="~assets/image/logo/logo.png" alt />
-      <p>Vue Music</p>
+      <i>Vue Music</i>
     </div>
     <div class="HRight"></div>
   </div>

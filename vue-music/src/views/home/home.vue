@@ -2,7 +2,7 @@
     <scroll :imgLoad="load" :data="songListApi">
       <div id="home">
         <slide v-if="slideApi.length" :content="slideApi" @imgLoad="imgLoad"></slide>
-        <p class="hotSongs">❤热门推荐歌单</p>
+        <p class="hotSongs">😊热门歌单推荐</p>
         <song-list :songList="songListApi"></song-list>
         <loading v-show="!songListApi.length"></loading>
       </div>
@@ -62,7 +62,6 @@ export default {
     color: @color;
     font-size: @sizexs;
     margin: 10px auto;
-    font-weight: bolder;
   }
 }
 </style>
