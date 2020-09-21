@@ -53,7 +53,7 @@ export default {
 };
 </script>
 
-<style lang='less' scope>
+<style lang='less' scoped>
 .scroll-wrapper {
   flex: 1;
   overflow: hidden;

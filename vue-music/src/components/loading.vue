@@ -9,7 +9,7 @@
 export default {};
 </script>
 
-<style lang='less'>
+<style lang='less' scoped>
 .loading {
   margin-top: 50px;
   display: flex;

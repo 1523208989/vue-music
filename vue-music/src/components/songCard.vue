@@ -14,7 +14,7 @@
 export default {};
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .songCard {
   width: 94%;
   background-color: rgba(19, 17, 17, 0.411);
