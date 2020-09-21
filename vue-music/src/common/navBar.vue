@@ -26,7 +26,7 @@ export default {
 <style lang='less'>
 #navBar {
   width: 100%;
-  margin: 0  0 6px;
+  margin: 0 0 6px;
   display: flex;
   justify-content: space-around;
   align-items: center;

@@ -1,7 +1,7 @@
 <template>
   <scroll :data="singerList">
     <div id="singer">
-      <singer-list :singerList="singerList"></singer-list>
+      <singer-list v-if="singerList.length" :singerList="singerList"></singer-list>
       <loading v-show="!singerList.length"></loading>
     </div>
   </scroll>
@@ -24,8 +24,7 @@ export default {
   methods: {
     _getSongerList() {
       singerListApi().then((res) => {
-        console.log(res.data.singerList.data.singerlist);
-          this.singerList = res.data.singerList.data.singerlist;
+        this.singerList = res.data.singerList.data.singerlist;
       });
     },
   },

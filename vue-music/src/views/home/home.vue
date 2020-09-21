@@ -1,12 +1,12 @@
 <template>
-  <scroll :imgLoad="load" :data="songListApi">
-    <div id="home">
-      <slide v-if="slideApi.length" :content="slideApi" @imgLoad="imgLoad"></slide>
-      <p class="hotSongs">❤热门推荐歌单</p>
-      <song-list :songList="songListApi"></song-list>
-      <loading v-show="!songListApi.length"></loading>
-    </div>
-  </scroll>
+    <scroll :imgLoad="load" :data="songListApi">
+      <div id="home">
+        <slide v-if="slideApi.length" :content="slideApi" @imgLoad="imgLoad"></slide>
+        <p class="hotSongs">❤热门推荐歌单</p>
+        <song-list :songList="songListApi"></song-list>
+        <loading v-show="!songListApi.length"></loading>
+      </div>
+    </scroll>
 </template>
 
 <script>

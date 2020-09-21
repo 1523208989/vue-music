@@ -30,15 +30,16 @@ export default {
     this._refresh();
   },
   methods: {
-    _initScroll() {     
+    _initScroll() {
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
         click: true,
       });
     },
     _refresh() {
-       this.scroll.refresh();
+      this.scroll.refresh();
     },
+
   },
   watch: {
     data() {
