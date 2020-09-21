@@ -26,11 +26,12 @@ export default {
 <style lang='less'>
 #navBar {
   width: 100%;
-  margin-bottom: 8px;
+  margin: 0  0 6px;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  font-size: @sizexxs;
+  font-size: @sizexs;
+  line-height: 30px;
   color: @color1;
 }
 </style>

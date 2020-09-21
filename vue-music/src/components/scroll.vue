@@ -6,11 +6,14 @@
 
 <script>
 import BScroll from "better-scroll";
+
 export default {
   props: {
     data: {
       type: Array,
-      default: [],
+      default: () => {
+        return [];
+      },
     },
     imgLoad: {
       type: Boolean,
@@ -22,18 +25,19 @@ export default {
     this.$nextTick((_) => {
       this._refresh();
     });
-
+  },
+  activated() {
+    this._refresh();
   },
   methods: {
-    _initScroll() {
-      if (!this.$refs.scroll) return new Error("error!!");
+    _initScroll() {     
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
         click: true,
       });
     },
     _refresh() {
-      this.scroll && this.scroll.refresh();
+       this.scroll.refresh();
     },
   },
   watch: {

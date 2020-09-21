@@ -17,7 +17,7 @@ export default {};
 <style lang="less">
 .songCard {
   width: 94%;
-  background-color: rgba(24, 23, 23, 0.76);
+  background-color: rgba(19, 17, 17, 0.411);
   border-radius: 8px;
   display: flex;
   border-bottom: 1px solid rgb(80, 80, 80);

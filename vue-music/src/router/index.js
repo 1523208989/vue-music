@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 const Home = () => import('views/home/home')
-const Singer = () => import('views/singer')
+const Singer = () => import('views/singer/singer')
 const Ranking = () => import('views/ranking')
 const Search = () => import('views/search')
 
@@ -15,7 +15,7 @@ const routes = [
   },
   {
     path: '/home',
-    component: Home
+    component: Home,
   },
   {
     path: '/singer',

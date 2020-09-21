@@ -19,7 +19,9 @@ export default {
   props: {
     content: {
       type: Array,
-      default: [],
+      default: () => {
+        return [];
+      },
     },
   },
   data() {
@@ -45,6 +47,11 @@ export default {
   components: {
     Slide,
   },
+  watch:{
+    slide(){
+      
+    }
+  }
 };
 </script>
 

@@ -11,7 +11,6 @@ import 'assets/style/class.less'
 Vue.config.productionTip = false
 FastClick.attach(document.body)
 Vue.use(VueLazyLoad, {
-
   loading: require('assets/image/logo/logo.png')
 })
 

@@ -26,6 +26,13 @@ module.exports = {
         target: 'http://localhost:3000',
         changeOrigin: true,
         pathRewrite: {}
+      },
+      '/singerListApi': {
+        target: 'https://u.y.qq.com/cgi-bin/musics.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/singerListApi': ''
+        }
       }
     }
   },

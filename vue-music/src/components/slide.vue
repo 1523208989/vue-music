@@ -9,6 +9,7 @@
 <script>
 import BScroll from "better-scroll";
 export default {
+
   props: {
     interval: {
       type: Number,
@@ -25,14 +26,13 @@ export default {
     };
   },
   mounted() {
+    this._initSlider();
+    this._scroll();
     this.$nextTick(() => {
       this._setSlideWidth();
     });
-    this._initSlider();
   },
-  beforeDestroy() {
-    this.slider.destroy();
-  },
+
   methods: {
     _setSlideWidth() {
       let scrollWidth = this.$refs.scroll.clientWidth;
@@ -41,7 +41,12 @@ export default {
       scrollGroup.children.forEach((item) => {
         item.style.width = scrollWidth + "px";
       });
-      this.loop && (this.slideWidth += 2 * scrollWidth);
+      if (this.loop) {
+        if (!this.is) {
+          this.slideWidth += 2 * scrollWidth;
+          this.is = true;
+        }
+      }
       scrollGroup.style.width = this.slideWidth + "px";
     },
     _initSlider() {
@@ -58,6 +63,8 @@ export default {
           autoplay: this.loop,
         },
       });
+    },
+    _scroll() {
       this.slider.on("scroll", () => {
         this.pageIndex = this.slider.getCurrentPage().pageX;
       });
