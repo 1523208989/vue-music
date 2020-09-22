@@ -16,7 +16,7 @@ export default {};
 <style lang='less'>
 #header {
   width: 100%;
-  padding: 6px 0;
+  height: @headerHeight;
   display: flex;
   justify-content: space-between;
   align-items: center;

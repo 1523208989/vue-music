@@ -23,16 +23,17 @@ export default {
 };
 </script>
 
-<style lang='less'>
+<style lang='less' scoped>
 #navBar {
   width: 100%;
-  margin: 0 0 6px;
+  padding: 0 0 6px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   font-size: @sizexs;
-  line-height: 26px;
   color: @color1;
+  height: @navBarHeight;
+  line-height: 28px;
   .path {
     color: @color;
     border-top: solid 2px transparent;

@@ -1,5 +1,5 @@
 <template>
-  <slide id="homeSlide" ref="slide">
+  <slide id="homeSlide">
     <div class="slide-page" v-for="(item,key) of content" :key="key">
       <a :href="item.jumpurl">
         <img @load="imgLoad" :src="item.picurl" alt />
@@ -14,7 +14,7 @@ export default {
   props: {
     content: {
       type: Array,
-      default: () => {
+      default(){
         return [];
       },
     },
@@ -34,9 +34,6 @@ export default {
   },
   components: {
     Slide,
-  },
-  watch: {
-    slide() {},
   },
 };
 </script>

@@ -14,7 +14,7 @@ export default {
   props: {
     songList: {
       type: Array,
-      default: () => {
+      default () {
         return [];
       },
     },

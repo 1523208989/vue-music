@@ -11,7 +11,7 @@ export default {
   props: {
     data: {
       type: Array,
-      default: () => {
+      default() {
         return [];
       },
     },
@@ -22,9 +22,6 @@ export default {
   },
   mounted() {
     this._initScroll();
-    this.$nextTick((_) => {
-      this._refresh();
-    });
   },
   activated() {
     this._refresh();
@@ -39,7 +36,6 @@ export default {
     _refresh() {
       this.scroll.refresh();
     },
-
   },
   watch: {
     data() {
