@@ -13,7 +13,7 @@
       @getIndex="_getIndex"
       @getY="_getY"
     ></singer-nav>
-    <p v-show="positionY < 0" class="topA_Z">{{getItem}}</p>
+    <p v-show="positionY < 0" class="topA_Z" ref="A_Z">{{getItem}}</p>
   </scroll>
 </template>
 
@@ -120,18 +120,35 @@ export default {
       );
     },
     _A_ZHeight() {
-      this.topArr.length ||
+      if (!this.topArr.length) {
         [...this.$refs.singerList.$refs.singerList].reduce((a, b) => {
           this.topArr.push(a);
           a += b.clientHeight;
           return a;
         }, 0);
+      }
     },
   },
   watch: {
     singerList() {
       this._initSingerList();
       this.is = true;
+    },
+    positionY() {
+      this.topArr.forEach((item, key) => {
+        if (key) {
+          if (-this.positionY <= item && -this.positionY > item - 24) {
+            this.$refs.A_Z.style.transform = `translateY(${
+              -24 + item + this.positionY
+            }px)`;
+          }
+          if (Math.floor(item + this.positionY) < 1) {
+            this.$refs.A_Z.style.transform = `translateY(0px)`;
+          }
+        } else {
+          this.$refs.A_Z.style.transform = `translateY(0px)`;
+        }
+      });
     },
   },
   components: {
@@ -148,7 +165,6 @@ export default {
   position: fixed;
   font-size: @sizexs;
   top: @headerHeight+ @navBarHeight+-1;
-  z-index: 9;
   width: 100vw;
   line-height: 24px;
   color: @color;

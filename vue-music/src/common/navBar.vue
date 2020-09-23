@@ -26,7 +26,7 @@ export default {
 <style lang='less' scoped>
 #navBar {
   width: 100%;
-  padding: 0 0 6px;
+  padding-bottom: 4px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -34,6 +34,8 @@ export default {
   color: @color1;
   height: @navBarHeight;
   line-height: 28px;
+  background-color: #000;
+  z-index: 9;
   .path {
     color: @color;
     border-top: solid 2px transparent;
