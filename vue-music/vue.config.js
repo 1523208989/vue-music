@@ -15,7 +15,7 @@ module.exports = {
                            //   请求地址 =>'https://u.y.qq.com/cgi-bin/musics.fcg/xxx/xx'
       }
       */
-      '/slideApi': { //轮播图api
+      '/slideApi': { 
         target: 'https://c.y.qq.com/v8/fcg-bin/musicmall.fcg',
         changeOrigin: true,
         pathRewrite: {
@@ -42,7 +42,7 @@ module.exports = {
       patterns: [path.resolve(__dirname, './src/assets/style/app.less')] // less所在文件路径
     }
   },
-  publicPath: "./",
+  publicPath: "/",
   // 输出文件目录
   outputDir: "dist",
   // 静态资源存放的文件夹(相对于ouputDir)

@@ -3,7 +3,7 @@
     <div v-for="(item,key) of singerView.keys()" :key="key">
       <div ref="singerList">
         <p v-if="singerView.get(item).length" class="A_Z" :class="{A_ZZ:true}">{{item}}</p>
-        <card v-for="(item,key) of singerView.get(item)" :key="key">
+        <card v-for="(item,key) of singerView.get(item)" :key="key" @click.native="getSinger(item)">
           <img slot="img" v-lazy="item.singer_pic" alt />
           <p slot="title">{{item.singer_name}}</p>
         </card>
@@ -22,6 +22,11 @@ export default {
       default() {
         return new Map();
       },
+    },
+  },
+  methods: {
+    getSinger(item) {
+      this.$router.push({path:`/singer/${item.singer_mid}`})
     },
   },
   components: {
@@ -45,6 +50,5 @@ export default {
     right: 20px;
     z-index: 9;
   }
-
 }
 </style>

@@ -14,6 +14,7 @@
       @getY="_getY"
     ></singer-nav>
     <p v-show="positionY < 0" class="topA_Z" ref="A_Z">{{getItem}}</p>
+    <router-view></router-view>
   </scroll>
 </template>
 
@@ -73,6 +74,7 @@ export default {
     this._getSongerList();
     this._createdA_Z();
   },
+
   updated() {
     this._A_ZHeight();
   },
