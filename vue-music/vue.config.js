@@ -15,7 +15,7 @@ module.exports = {
                            //   请求地址 =>'https://u.y.qq.com/cgi-bin/musics.fcg/xxx/xx'
       }
       */
-      '/slideApi': { 
+      '/slideApi': {
         target: 'https://c.y.qq.com/v8/fcg-bin/musicmall.fcg',
         changeOrigin: true,
         pathRewrite: {
@@ -33,6 +33,11 @@ module.exports = {
         pathRewrite: {
           '^/singerListApi': ''
         }
+      },
+      '/singerDetailApi': {
+        target: 'http://localhost:3000',
+        changeorigin: true,
+        pathRewrite: {}
       }
     }
   },

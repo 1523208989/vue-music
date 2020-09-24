@@ -7,7 +7,7 @@ const app = express()
 //创建路由对象
 const apiRouter = express.Router()
 
-app.use('/songListApi',apiRouter)
+app.use('/songListApi', apiRouter)
 
 apiRouter.get('/', (req, res) => {
   axios.get(' https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg', {
@@ -22,5 +22,18 @@ apiRouter.get('/', (req, res) => {
     console.log(e);
   })
 })
-
+app.get('/singerDetailApi/:id', (req, res) => {
+  console.log(req);
+  axios.get('https://u.y.qq.com/cgi-bin/musics.fcg', {
+    headers: {
+      origin: 'https://y.qq.com',
+      referer: `https://y.qq.com/n/yqq/singer/${req.params.id}.html`
+    },
+    params: req.query
+  }).then(response => {
+    res.send(response.data)
+  }).catch(e => {
+    console.log(e);
+  })
+})
 app.listen(3000)

@@ -1,12 +1,40 @@
 <template>
-  <transition appear name="detail"><!-- transition不加appear会导致enter-active动画失效 -->
-    <div id="singerDetail">
-    </div>
+  <transition appear name="detail"
+    ><!-- transition不加appear会导致enter-active动画失效 -->
+    <div id="singerDetail"></div>
   </transition>
 </template>
 
 <script>
-export default {};
+import { mapState, mapGetters } from "vuex";
+import singerDetailApi from "api/singer/singerDetail";
+export default {
+  data() {
+    return {
+      songList: [],
+    };
+  },
+  computed: {
+    ...mapState(["singer"]),
+    ...mapState({ singer: "singer" }),
+    ...mapGetters(["singer"]),
+    ...mapGetters({
+      getSinger: "singer",
+    }),
+  },
+  created() {
+    console.log(this.singer);
+    this._getDetailApi();
+  },
+  methods: {
+    _getDetailApi() {
+      singerDetailApi(this.singer.singer_mid).then((res) => {
+        this.songList = res.data.singerSongList.data.songList;
+        console.log(this.songList);
+      });
+    },
+  },
+};
 </script>
 
 <style lang='less' scoped>
