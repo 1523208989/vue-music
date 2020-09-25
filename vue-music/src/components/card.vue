@@ -17,10 +17,10 @@ export default {};
 <style lang="less" scoped>
 .songCard {
   width: 94%;
-  background-color: rgba(19, 17, 17, 0.411);
+  background-color: @color3;
   border-radius: 8px;
   display: flex;
-  border-bottom: 1px solid rgb(80, 80, 80);
+  border-bottom: 1px solid rgba(70, 70, 70, 0.7) ;
   margin: 0 auto;
   padding: 10px;
   justify-content: flex-start;
@@ -41,11 +41,12 @@ export default {};
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    font-size: @sizexs;
+    font-size: @sizexxs;
     p{
       &:first-child{
+        font-size: @sizexs;
         font-weight: bolder;
-        color: rgb(80, 120, 80);
+        color: #ffffff75;
       }
     }
   }

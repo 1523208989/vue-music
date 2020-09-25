@@ -1,5 +1,5 @@
 import axios from 'axios'
-import './detailSign' //歌手详情页请求参数sign值生成函数
+import './getSign' //歌手详情页请求参数sign值生成函数
 
 export default (id) => {
   let data = { "comm": { "ct": 24, "cv": 0 }, "singerSongList": { "method": "GetSingerSongList", "param": { "order": 1, "singerMid": id, "begin": 0, "num": 10 }, "module": "musichall.song_list_server" } }

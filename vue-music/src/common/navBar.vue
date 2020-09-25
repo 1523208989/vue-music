@@ -1,8 +1,13 @@
 <template>
   <div id="navBar">
-    <router-link v-for="(item,key) of menu" :key="key" :to="item.path" tag="div">
-      <div :class="{'path':$route.path.includes(item.path)}">
-        <p>{{item.a}}</p>
+    <router-link
+      v-for="(item, key) of menu"
+      :key="key"
+      :to="item.path"
+      tag="div"
+    >
+      <div :class="{ path: $route.path.includes(item.path) }">
+        <p>{{ item.a }}</p>
       </div>
     </router-link>
   </div>
@@ -34,7 +39,8 @@ export default {
   color: @color1;
   height: @navBarHeight;
   line-height: 28px;
-  background-color: #000;
+  background-color: @color3;
+  box-sizing: content-box;
   z-index: 9;
   .path {
     color: @color;

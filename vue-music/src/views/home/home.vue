@@ -1,12 +1,16 @@
 <template>
+  <div id="home">
+    <slide
+      v-if="slideApi.length"
+      :content="slideApi"
+      @imgLoad="imgLoad"
+    ></slide>
+    <p class="hotSongs">热门歌单推荐</p>
     <scroll :imgLoad="load" :data="songListApi">
-      <div id="home">
-        <slide v-if="slideApi.length" :content="slideApi" @imgLoad="imgLoad"></slide>
-        <p class="hotSongs">😊热门歌单推荐</p>
-        <song-list :songList="songListApi"></song-list>
-        <loading v-show="!songListApi.length"></loading>
-      </div>
-    </scroll>
+      <song-list :songList="songListApi"></song-list>
+      <loading v-show="!songListApi.length"></loading
+    ></scroll>
+  </div>
 </template>
 
 <script>
@@ -31,13 +35,11 @@ export default {
   methods: {
     _getSlideApi() {
       slideRequest().then((res) => {
-        console.log(res);
         this.slideApi = res.data.data.banner;
       });
     },
     _getSongListApi() {
       songListRequest().then((res) => {
-        console.log(res);
         this.songListApi = res.data.data.list;
       });
     },
@@ -54,14 +56,19 @@ export default {
 };
 </script>
 
-<style lang='less'>
+<style lang='less' scoped>
 #home {
   margin: 0 auto;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   .hotSongs {
     text-align: center;
     color: @color;
     font-size: @sizexs;
-    margin: 10px auto;
+    margin: 8px auto;
   }
 }
 </style>

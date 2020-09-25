@@ -59,11 +59,11 @@ export default {
 .singerNav {
   position: fixed;
   top: 50%;
-  right: 3%;
+  right: 5%;
   transform: translateY(-45%);
   text-align: center;
   border-radius: 5px;
-  background-color: rgba(32, 31, 31, 0.6);
+  background-color: rgba(32, 31, 31, 0.5);
   list-style-type: none;
   color: @color1;
   font-size: @sizexxs;
@@ -73,7 +73,6 @@ export default {
   }
   .isActive {
     color: @color;
-    text-shadow: 1px 1px 12px 10px #fff;
   }
 }
 </style>

@@ -13,10 +13,11 @@
 export default {};
 </script>
 
-<style lang='less'>
+<style lang='less' scoped>
 #header {
   width: 100%;
   height: @headerHeight;
+  background-color: @color3;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +29,7 @@ export default {};
     width: 140px;
     padding-right: 10px;
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
     font-weight: bolder;
     color: @color;

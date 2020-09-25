@@ -139,9 +139,9 @@ export default {
     positionY() {
       this.topArr.forEach((item, key) => {
         if (key) {
-          if (-this.positionY <= item && -this.positionY > item - 24) {
+          if (-this.positionY <= item && -this.positionY > item - 27) {
             this.$refs.A_Z.style.transform = `translateY(${
-              -24 + item + this.positionY
+              -27 + item + this.positionY
             }px)`;
           }
           if (Math.floor(item + this.positionY) < 1) {
@@ -166,11 +166,11 @@ export default {
 .topA_Z {
   position: fixed;
   font-size: @sizexs;
-  top: @headerHeight+ @navBarHeight+-1;
+  top: @headerHeight+ @navBarHeight+3;
   width: 100vw;
-  line-height: 24px;
+  line-height: 27px;
   color: @color;
-  background-color: #000000f0;
+  background-color: @color2;
   padding-left: 5%;
 }
 </style>

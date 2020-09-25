@@ -79,14 +79,14 @@ export default {
   position: relative;
   .slide-wrapper {
     width: 96%;
-    margin: 10px auto;
+    margin: 10px auto 0;
     border-radius: @radius;
     line-height: 0;
     overflow: hidden;
   }
   ul {
     position: absolute;
-    bottom: 15px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
