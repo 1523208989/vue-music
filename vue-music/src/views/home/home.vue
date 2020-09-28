@@ -68,7 +68,7 @@ export default {
     text-align: center;
     color: @color;
     font-size: @sizexs;
-    margin: 8px auto;
+    padding: 8px 0;
   }
 }
 </style>

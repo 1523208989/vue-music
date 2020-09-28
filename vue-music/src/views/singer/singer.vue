@@ -1,7 +1,11 @@
 <template>
   <scroll :data="singerList" ref="scroll">
     <div id="singer">
-      <singer-list v-if="singerList.length" :singerView="singerView" ref="singerList"></singer-list>
+      <singer-list
+        v-if="singerList.length"
+        :singerView="singerView"
+        ref="singerList"
+      ></singer-list>
       <loading v-show="!singerList.length"></loading>
     </div>
     <singer-nav
@@ -13,7 +17,7 @@
       @getIndex="_getIndex"
       @getY="_getY"
     ></singer-nav>
-    <p v-show="positionY < 0" class="topA_Z" ref="A_Z">{{getItem}}</p>
+    <p v-show="positionY < 0" class="topA_Z" ref="A_Z">{{ getItem }}</p>
     <router-view></router-view>
   </scroll>
 </template>
@@ -123,6 +127,7 @@ export default {
     },
     _A_ZHeight() {
       if (!this.topArr.length) {
+        console.log(this);
         [...this.$refs.singerList.$refs.singerList].reduce((a, b) => {
           this.topArr.push(a);
           a += b.clientHeight;
@@ -139,12 +144,12 @@ export default {
     positionY() {
       this.topArr.forEach((item, key) => {
         if (key) {
-          if (-this.positionY <= item && -this.positionY > item - 27) {
+          if (-this.positionY <= item && -this.positionY > item - 26) {
             this.$refs.A_Z.style.transform = `translateY(${
-              -27 + item + this.positionY
+              -26 + item + this.positionY
             }px)`;
           }
-          if (Math.floor(item + this.positionY) < 1) {
+          if (Math.floor(item + this.positionY) === 0) {
             this.$refs.A_Z.style.transform = `translateY(0px)`;
           }
         } else {
@@ -166,8 +171,8 @@ export default {
 .topA_Z {
   position: fixed;
   font-size: @sizexs;
-  top: @headerHeight+ @navBarHeight+3;
-  width: 100vw;
+  top: @headerHeight+ @navBarHeight+2;
+  width: 100%;
   line-height: 27px;
   color: @color;
   background-color: @color2;

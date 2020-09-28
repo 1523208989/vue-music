@@ -31,6 +31,10 @@ export default {
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
         click: true,
+        stopPropagation: true,
+      });
+      this.scroll.on("scroll", (position) => {
+        this.$emit("scroll", position.y);
       });
     },
     _refresh() {
@@ -52,7 +56,13 @@ export default {
 
 <style lang='less' scoped>
 .scroll-wrapper {
-  flex: 1;
+  width: 100%;
+  flex: 1;    
+  height: 0; //设置height或width属性(值小于盒子内容高度或宽度)，
+  //当值小于盒子内容高度或宽度，保证盒子高度或宽度按照flex：1均匀分配，
+  //当值大于等于盒子内容高度或宽度，盒子高度或宽度等于内容高度或宽度，
+  //导致flex布局剩余空间分配失效！
+  //overflow：hidden也可解决这一问题  
   overflow: hidden;
 }
 </style>

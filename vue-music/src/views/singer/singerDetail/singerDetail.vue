@@ -35,7 +35,6 @@ export default {
     _getDetailApi() {
       singerDetailApi(this.singer.singer_mid).then((res) => {
         this.songList = getSongList(res.data.singerSongList.data.songList);
-        console.log(res);
       });
     },
   },
@@ -46,5 +45,4 @@ export default {
 </script>
 
 <style lang='less' scoped>
-
 </style>

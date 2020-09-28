@@ -6,7 +6,11 @@
       </div>
     </div>
     <ul v-if="dots">
-      <li v-for="(item,key) of content" :key="key" :class="{dot:pageIndex===key}"></li>
+      <li
+        v-for="(item, key) of content"
+        :key="key"
+        :class="{ dot: pageIndex === key }"
+      ></li>
     </ul>
   </div>
 </template>
@@ -78,9 +82,9 @@ export default {
 .slide {
   position: relative;
   .slide-wrapper {
-    width: 96%;
+    width: 97%;
     margin: 10px auto 0;
-    border-radius: @radius;
+    border-radius: 8px;
     line-height: 0;
     overflow: hidden;
   }
@@ -92,7 +96,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 9;
     li {
       list-style-type: none;
       width: @sizexxxs;

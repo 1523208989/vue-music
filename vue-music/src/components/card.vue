@@ -16,13 +16,13 @@ export default {};
 
 <style lang="less" scoped>
 .songCard {
-  width: 94%;
+  width: 97%;
   background-color: @color3;
   border-radius: 8px;
   display: flex;
-  border-bottom: 1px solid rgba(70, 70, 70, 0.7) ;
   margin: 0 auto;
-  padding: 10px;
+  border-bottom: 1px solid @color2;
+  padding: 9px;
   justify-content: flex-start;
   align-items: center;
   overflow: hidden;
@@ -42,11 +42,10 @@ export default {};
     flex-direction: column;
     justify-content: space-around;
     font-size: @sizexxs;
-    p{
-      &:first-child{
+    p {
+      &:first-child {
         font-size: @sizexs;
-        font-weight: bolder;
-        color: #ffffff75;
+        color: @color1;
       }
     }
   }

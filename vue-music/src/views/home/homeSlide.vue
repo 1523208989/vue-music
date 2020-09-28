@@ -43,7 +43,7 @@ export default {
   .slide-page {
     border-radius: @radius;
     overflow: hidden;
-    display: inline-block;
+    display: inline-block;   
     img {
       width: 100%;
     }

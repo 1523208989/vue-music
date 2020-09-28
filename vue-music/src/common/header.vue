@@ -17,7 +17,6 @@ export default {};
 #header {
   width: 100%;
   height: @headerHeight;
-  background-color: @color3;
   display: flex;
   justify-content: space-between;
   align-items: center;

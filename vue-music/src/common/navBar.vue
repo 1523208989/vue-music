@@ -39,7 +39,7 @@ export default {
   color: @color1;
   height: @navBarHeight;
   line-height: 28px;
-  background-color: @color3;
+  background-color: @color2;
   box-sizing: content-box;
   z-index: 9;
   .path {
