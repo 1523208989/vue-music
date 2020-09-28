@@ -155,7 +155,7 @@ export default {
     overflow: hidden;
     z-index: -2;
     .random {
-      width: 32%;
+      width: 36%;
       font-size: @sizexs;
       border-radius: 16px;
       border: 1px solid @color;
@@ -164,6 +164,7 @@ export default {
       color: @color;
       top: 75%;
       left: 50%;
+      padding: 3px;
       transform: translateX(-50%);
       justify-content: space-around;
       align-items: center;
