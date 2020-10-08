@@ -5,6 +5,7 @@ import store from './store/index'
 import VueLazyLoad from 'vue-lazyload'
 import FastClick from 'fastclick'
 import 'assets/style/init.less'
+import 'assets/font/icon_font/iconfont.css'
 
 Vue.config.productionTip = false;
 FastClick.attach(document.body);

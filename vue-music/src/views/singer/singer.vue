@@ -127,7 +127,6 @@ export default {
     },
     _A_ZHeight() {
       if (!this.topArr.length) {
-        console.log(this);
         [...this.$refs.singerList.$refs.singerList].reduce((a, b) => {
           this.topArr.push(a);
           a += b.clientHeight;

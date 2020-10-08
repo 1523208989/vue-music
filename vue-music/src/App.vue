@@ -5,16 +5,19 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>  
 </template>
 
 <script>
 import Header from "common/header";
 import NavBar from "common/navBar";
+import Player from 'common/player/player'
 export default {
   components: {
     Header,
     NavBar,
+    Player
   },
 };
 </script>

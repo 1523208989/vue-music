@@ -2,6 +2,7 @@
 const express = require('express')
 //引用axios
 const axios = require('axios')
+const { response } = require('express')
 //创建网站服务器
 const app = express()
 //创建路由对象
@@ -23,7 +24,6 @@ apiRouter.get('/', (req, res) => {
   })
 })
 app.get('/singerDetailApi/:id', (req, res) => {
-  console.log(req);
   axios.get('https://u.y.qq.com/cgi-bin/musics.fcg', {
     headers: {
       origin: 'https://y.qq.com',

@@ -1,0 +1,316 @@
+<template>
+  <div v-show="playList.length">
+    <transition
+      name="player"
+      appear
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
+      <div id="player" v-show="fullScroll">
+        <div
+          class="fuzzy"
+          :style="{ 'background-image': `url(${song.img_url})` }"
+        ></div>
+        <div class="top">
+          <img
+            src="~assets/image/someImg/down.png"
+            class="down"
+            @click="down"
+            alt=""
+          />
+          <h6 class="song_name">{{ song.title }}</h6>
+          <p class="singer_name">{{ song.name }}</p>
+        </div>
+
+        <div class="big_box" ref="cd">
+          <div class="img_box">
+            <img :src="song.img_url" alt="" />
+          </div>
+        </div>
+        <div class="player">
+          <i class="iconfont iconxunhuan"></i>
+          <i class="iconfont iconshangyishou-yuanshijituantubiao"></i>
+          <i class="iconfont iconbofang"></i>
+          <i class="iconfont iconxiayishou-yuanshijituantubiao"></i>
+          <i class="iconfont iconshoucang"></i>
+        </div>
+      </div>
+    </transition>
+    <transition name="min_player">
+      <div id="min_player" v-show="!fullScroll" @click="full">
+        <div class="img_box">
+          <img :src="song.img_url" alt="" />
+        </div>
+        <div class="centent">
+          <p>{{ song.title }}</p>
+          <p>{{ song.name }}</p>
+        </div>
+        <i class="iconfont iconbofang"></i>
+        <i class="iconfont icongedan"></i>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapState, mapMutations } from "vuex";
+import animations from "create-keyframe-animation";
+import getAudioApi from "api/player/audio.js";
+export default {
+  computed: {
+    ...mapState(["fullScroll", "playerList", "song"]),
+    ...mapState({
+      fullScroll: "fullScroll",
+      playList: "playList",
+      song: "song",
+    }),
+  },
+  methods: {
+    ...mapMutations(["setFullScroll"]),
+    ...mapMutations({ setFullScroll: "setFullScroll" }),
+    _getAudioApi() { 
+      getAudioApi(this.song.media_mid).then((res) => {   
+        console.log(res);
+      });
+    },
+    down() {
+      this.setFullScroll(false);
+    },
+    full() {
+      this.setFullScroll(true);
+    },
+    enter(el, done) {
+      const { x, y, scale } = this.getPosition();
+      animations.registerAnimation({
+        name: "move",
+        animation: {
+          0: {
+            transform: `translate3d(${x}px,${y}px,0) scale(${scale})`,
+          },
+          60: {
+            transform: `translate3d(-50%,0,0) scale(1.1)`,
+          },
+          100: {
+            transform: `translate3d(-50%,0,0) scale(1)`,
+          },
+        },
+        presets: {
+          duration: 800,
+        },
+      });
+      animations.runAnimation(this.$refs.cd, "move", done);
+    },
+    afterEnter(el) {
+      animations.unregisterAnimation("move");
+      this.$refs.cd.style.animation = "";
+    },
+    leave(el, done) {
+      const { x, y, scale } = this.getPosition();
+      this.$refs.cd.style.transition = "all 0.3s";
+      this.$refs.cd.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale})`;
+      this.$refs.cd.addEventListener("transitionend", done);
+    },
+    afterLeave(el) {
+      this.$refs.cd.style.transition = "";
+      this.$refs.cd.style.transform = "";
+    },
+    getPosition() {
+      const min_x = window.innerWidth * 0.07 + 10;
+      const min_y = window.innerHeight - 32.5;
+      const full_x = window.innerWidth / 2 + window.innerWidth * 0.45;
+      const full_y = 90 + window.innerWidth * 0.45;
+      const x = min_x - full_x;
+      const y = min_y - full_y;
+      const scale = 14 / 90;
+      return {
+        x,
+        y,
+        scale,
+      };
+    },
+  },
+  watch:{
+    song(){
+      console.log(1);
+      this._getAudioApi();
+    }
+  }
+};
+</script>
+
+<style lang='less' scoped>
+#player {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #725f5f;
+  z-index: 9999;
+  .fuzzy {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-position: center;
+    background-size: cover;
+    filter: blur(80px);
+    z-index: -1;
+  }
+  .top {
+    position: relative;
+    text-align: center;
+    height: 10vh;
+    .down {
+      position: absolute;
+      width: 35px;
+      top: 25px;
+      left: 40px;
+      transform: translate(-50%, -50%);
+      color: @color;
+    }
+    .song_name {
+      position: absolute;
+      width: 45%;
+      left: 50%;
+      top: 25px;
+      transform: translate(-50%, -50%);
+      color: @color;
+      font-size: @sizem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .singer_name {
+      position: absolute;
+      left: 50%;
+      top: 50px;
+      transform: translate(-50%, -50%);
+      color: @color;
+      font-size: @sizexs;
+    }
+  }
+  .big_box {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 90vw;
+    height: 90vw;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .img_box {
+      width: 84vw;
+      height: 84vw;
+      background-image: url();
+      border-radius: 50%;
+      overflow: hidden;
+      img {
+        width: 100%;
+      }
+    }
+  }
+  .player {
+    color: @color;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 30px;
+    position: fixed;
+    bottom: 6%;
+    i {
+      font-size: 46px;
+      &:first-child {
+        font-size: 40px;
+      }
+      &:nth-child(3) {
+        font-size: 52px;
+      }
+      &:last-child {
+        font-size: 40px;
+        color: @color1;
+      }
+    }
+  }
+}
+#min_player {
+  position: fixed;
+  height: 65px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(40, 39, 61);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 9999;
+  .img_box {
+    width: 14vw;
+    height: 14vw;
+    margin-left: 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    img {
+      width: 100%;
+    }
+  }
+  .centent {
+    p {
+      width: 40vw;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: @sizexxs;
+      color: @color1;
+      padding: 3px;
+      &:first-child {
+        font-size: @sizexs;
+        color: @color;
+      }
+    }
+  }
+  i {
+    font-size: 36px;
+    color: @color;
+    &:last-child {
+      margin-right: 25px;
+    }
+  }
+}
+.player-enter-active,
+.player-leave-active {
+  transition: all 0.3s;
+  .top {
+    transition: all 0.3s;
+  }
+  .player {
+    transition: all 0.3s;
+  }
+}
+.player-enter,
+.player-leave-to {
+  opacity: 0;
+  .top {
+    transform: translate3d(0, -150px, 0);
+  }
+  .player {
+    transform: translate3d(0, 150px, 0);
+  }
+}
+.min_player-enter-active,
+.min_player-leave-active {
+  transition: all 0.2s;
+}
+.min_player-enter,
+.min_player-leave-to {
+  opacity: 0;
+  transform: translate3d(0, 50px, 0);
+}
+</style>

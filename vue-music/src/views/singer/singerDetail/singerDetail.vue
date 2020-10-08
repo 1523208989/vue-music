@@ -33,8 +33,9 @@ export default {
     ...mapMutations(["setSinger"]),
     ...mapMutations({ setSinger: "setSinger" }),
     _getDetailApi() {
-      singerDetailApi(this.singer.singer_mid).then((res) => {
+      singerDetailApi(this.singer.singer_mid).then((res) => {       
         this.songList = getSongList(res.data.singerSongList.data.songList);
+        console.log(this.songList);
       });
     },
   },

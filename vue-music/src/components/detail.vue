@@ -14,13 +14,17 @@
           <img src="~assets/image/someImg/播放.png" alt="" />
           <p>随机播放列表</p>
         </div>
-        <img :src="img" alt="" />
+        <img ref="img" :src="img" alt="" />
       </div>
       <div ref="layer" class="layer"></div>
       <scroll :data="songList" @scroll="scroll" ref="scroll">
         <div ref="songList">
-          <card v-for="(item, key) of songList" :key="key">
-            <img slot="img" :src="imgList" alt="" />
+          <card
+            v-for="(item, key) of songList"
+            :key="key"
+            @click.native="selectItem(item, key)"
+          >
+            <img slot="img" :src="item.img_url" alt="" />
             <p slot="title">{{ item.title }}</p>
             <p slot="author">{{ item.name }}--{{ item.album }}</p>
           </card>
@@ -34,15 +38,12 @@
 import Scroll from "./scroll";
 import Card from "./card";
 import { mapState } from "vuex";
+import { mapActions } from "vuex";
 export default {
   props: {
     img: {
       type: String,
       default: "",
-    },
-    imgList: {
-      type: String,
-      default: require("assets/image/someImg/music.png"),
     },
     songList: {
       type: Array,
@@ -70,6 +71,8 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["playerGo"]),
+    ...mapActions({ playerGo: "playerGo" }),
     back() {
       this.$router.go(-1);
     },
@@ -82,6 +85,14 @@ export default {
     getScrollHeight() {
       this.scrollH = this.$refs.scroll.$el.clientHeight;
     },
+    selectItem(item, key) {
+      this.playerGo({
+        playList: this.songList,
+        flag: true,
+        song: item,
+        key,
+      });
+    },
   },
   components: {
     Scroll,
@@ -90,7 +101,8 @@ export default {
   watch: {
     positionY(newV) {
       if (-newV >= 0 && -newV <= 240) {
-        this.$refs.layer.style.transform = `translateY(${newV}px)`;
+        this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
+        this.$refs.img.style.filter = `blur(${20*(-newV/240)}px)`;
         this.$refs.imgBox.style["z-index"] = -2;
         this.$refs.imgBox.style.height = "280px";
         this.$refs.scroll.$el.style.flex = 1;
@@ -103,7 +115,7 @@ export default {
         this.$refs.random.style.display = "none";
       }
       if (-newV < 0) {
-        this.$refs.layer.style.transform = `translateY(${newV}px)`;
+        this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
         this.$refs.imgBox.style.transform = `scale(${1 + newV / 600})`;
         this.$refs.imgBox.style.height = `${280 + newV}px`;
       }
@@ -132,7 +144,7 @@ export default {
     width: 100%;
     height: 100vh;
     position: absolute;
-    top: 276px;
+    top: 280px;
     background-color: @color2;
     z-index: -1;
   }
@@ -142,10 +154,10 @@ export default {
     top: 25px;
     left: 40px;
     transform: translate(-50%, -50%);
-    color: @color;
     z-index: 99;
   }
   .singer {
+    color: @color;
     left: 50%;
     font-size: @sizem;
   }
@@ -153,6 +165,7 @@ export default {
     height: 280px;
     position: relative;
     overflow: hidden;
+    background-color: #585555;
     z-index: -2;
     .random {
       width: 36%;
@@ -181,10 +194,8 @@ export default {
 .detail-enter-active {
   transition: all 0.2s;
 }
-.detail-enter {
-  transform: translateX(100%);
-}
+.detail-enter,
 .detail-leave-to {
-  transform: translateX(100%);
+  transform: translate3d(100%, 0, 0);
 }
 </style>
