@@ -1,9 +1,9 @@
 class Song {
-  constructor(name, title, album, media_mid, img_url) {
+  constructor(name, title, album, mid, img_url) {
     this.name = name;
     this.title = title;
     this.album = album;
-    this.media_mid = media_mid;
+    this.mid = mid;
     this.img_url = img_url
   }
 }
@@ -13,7 +13,7 @@ export default (songList) => {
       return item.name
     })
     return new Song(singers.join('/'), item.songInfo.title,
-     item.songInfo.album.name, item.songInfo.file.media_mid, 
+     item.songInfo.album.name, item.songInfo.mid, 
      `https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.songInfo.album.mid}.jpg?max_age=2592000`)
   })
 }

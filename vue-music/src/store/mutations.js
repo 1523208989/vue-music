@@ -5,6 +5,9 @@ export default {
   setPlayList(state, item) {
     state.playList = item
   },
+  setPlayListUrl(state, item) {
+    state.playListUrl = item
+  },
   setFullScroll(state, item) {
     state.fullScroll = item
   },
@@ -16,5 +19,8 @@ export default {
   },
   setMode(state, item) {
     state.mode = item
+  },
+  setPlay(state, item) {
+    state.play = item
   }
 }

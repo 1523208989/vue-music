@@ -14,7 +14,7 @@
           <img src="~assets/image/someImg/播放.png" alt="" />
           <p>随机播放列表</p>
         </div>
-        <img ref="img" :src="img" alt="" />
+        <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
       <div ref="layer" class="layer"></div>
       <scroll :data="songList" @scroll="scroll" ref="scroll">
@@ -24,7 +24,11 @@
             :key="key"
             @click.native="selectItem(item, key)"
           >
-            <img slot="img" :src="item.img_url" alt="" />
+            <img
+              slot="img"
+              v-lazy="item.img_url"
+              alt=""
+            />
             <p slot="title">{{ item.title }}</p>
             <p slot="author">{{ item.name }}--{{ item.album }}</p>
           </card>
@@ -102,7 +106,7 @@ export default {
     positionY(newV) {
       if (-newV >= 0 && -newV <= 240) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
-        this.$refs.img.style.filter = `blur(${20*(-newV/240)}px)`;
+        this.$refs.img.style.filter = "brightness(60%)";
         this.$refs.imgBox.style["z-index"] = -2;
         this.$refs.imgBox.style.height = "280px";
         this.$refs.scroll.$el.style.flex = 1;
@@ -112,6 +116,7 @@ export default {
       if (-newV > 240) {
         this.$refs.imgBox.style["z-index"] = 9;
         this.$refs.imgBox.style.height = "45px";
+        this.$refs.img.style.filter = "brightness(30%)";
         this.$refs.random.style.display = "none";
       }
       if (-newV < 0) {
@@ -167,6 +172,9 @@ export default {
     overflow: hidden;
     background-color: #585555;
     z-index: -2;
+    .singer_img {
+      filter: brightness(60%);
+    }
     .random {
       width: 36%;
       font-size: @sizexs;

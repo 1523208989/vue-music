@@ -1,13 +1,15 @@
 export default {
-  playerGo({ commit }, {
+  playerGo({ commit, state }, {
     playList,
     flag,
     song,
     key
   }) {
+
+      commit('setSong', song)
+      commit('setIndex', key)
+
     commit('setPlayList', playList)
     commit('setFullScroll', flag)
-    commit('setSong',song)
-    commit('setIndex', key)
-  }
+  },
 }

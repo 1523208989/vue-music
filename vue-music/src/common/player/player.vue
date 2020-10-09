@@ -1,5 +1,12 @@
 <template>
   <div v-show="playList.length">
+    <div id="error" v-show="!playListUrl[index] && index !== -1">
+      <div>
+        <span @click="close">×</span>
+        <h4>提示</h4>
+        <p>您播放的歌曲仅限qq音乐客户端播放，建议您打开客户端进行播放。</p>
+      </div>
+    </div>
     <transition
       name="player"
       appear
@@ -8,7 +15,7 @@
       @leave="leave"
       @after-leave="afterLeave"
     >
-      <div id="player" v-show="fullScroll">
+      <div id="player" v-show="fullScroll && playListUrl[index]">
         <div
           class="fuzzy"
           :style="{ 'background-image': `url(${song.img_url})` }"
@@ -26,54 +33,83 @@
 
         <div class="big_box" ref="cd">
           <div class="img_box">
-            <img :src="song.img_url" alt="" />
+            <img v-lazy="song.img_url" alt="" />
           </div>
         </div>
         <div class="player">
           <i class="iconfont iconxunhuan"></i>
           <i class="iconfont iconshangyishou-yuanshijituantubiao"></i>
-          <i class="iconfont iconbofang"></i>
+          <i :class="`iconfont ${playClass}`" @click="setPlay(!play)"></i>
           <i class="iconfont iconxiayishou-yuanshijituantubiao"></i>
           <i class="iconfont iconshoucang"></i>
         </div>
       </div>
     </transition>
     <transition name="min_player">
-      <div id="min_player" v-show="!fullScroll" @click="full">
+      <div
+        id="min_player"
+        v-show="!fullScroll && playListUrl[index]"
+        @click="full"
+      >
         <div class="img_box">
-          <img :src="song.img_url" alt="" />
+          <img v-lazy="song.img_url" alt="" />
         </div>
         <div class="centent">
           <p>{{ song.title }}</p>
           <p>{{ song.name }}</p>
         </div>
-        <i class="iconfont iconbofang"></i>
+        <i :class="`iconfont ${playClass}`" @click.stop="setPlay(!play)"></i>
         <i class="iconfont icongedan"></i>
       </div>
     </transition>
+    <audio ref="audio" autoplay :src="audioUrl"></audio>
   </div>
 </template>
-
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
-import getAudioApi from "api/player/audio.js";
 export default {
+  mounted() {
+    this.setPlay(true);
+  },
   computed: {
-    ...mapState(["fullScroll", "playerList", "song"]),
+    ...mapState([
+      "fullScroll",
+      "index",
+      "playList",
+      "playListUrl",
+      "song",
+      "play",
+    ]),
     ...mapState({
       fullScroll: "fullScroll",
+      index: "index",
       playList: "playList",
       song: "song",
+      play: "play",
+      playListUrl: "playListUrl",
     }),
+    playClass() {
+      return this.play ? "iconicon_bofang" : "iconbofang";
+    },
+    audioUrl() {
+      return (
+        this.playListUrl[this.index] &&
+        `http://ws.stream.qqmusic.qq.com/${this.playListUrl[this.index]}`
+      );
+    },
   },
   methods: {
-    ...mapMutations(["setFullScroll"]),
-    ...mapMutations({ setFullScroll: "setFullScroll" }),
-    _getAudioApi() { 
-      getAudioApi(this.song.media_mid).then((res) => {   
-        console.log(res);
-      });
+    ...mapMutations(["setFullScroll", "setPlay", "setPlayList"]),
+    ...mapMutations({
+      setFullScroll: "setFullScroll",
+      setPlay: "setPlay",
+      setPlayList: "setPlayList",
+      setIndex: "setIndex",
+    }),
+    close() {
+      this.setPlayList([]);
+      this.setIndex(-1);
     },
     down() {
       this.setFullScroll(false);
@@ -131,16 +167,53 @@ export default {
       };
     },
   },
-  watch:{
-    song(){
-      console.log(1);
-      this._getAudioApi();
-    }
-  }
+  watch: {
+    song() {
+      this.setPlay(true);
+    },
+    play(newV) {
+        newV ? this.$refs.audio.play() : this.$refs.audio.pause();
+    },
+  },
 };
 </script>
 
 <style lang='less' scoped>
+#error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #000000a0;
+
+  z-index: 99999;
+  div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 10px 20px;
+    width: 68vw;
+    span {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    h4 {
+      border-bottom: 1px solid #cccccc;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 15px;
+      line-height: 20px;
+    }
+  }
+}
 #player {
   position: fixed;
   top: 0;
@@ -157,7 +230,7 @@ export default {
     right: 0;
     background-position: center;
     background-size: cover;
-    filter: blur(80px);
+    filter: blur(15px) brightness(50%);
     z-index: -1;
   }
   .top {
@@ -208,7 +281,6 @@ export default {
     .img_box {
       width: 84vw;
       height: 84vw;
-      background-image: url();
       border-radius: 50%;
       overflow: hidden;
       img {
