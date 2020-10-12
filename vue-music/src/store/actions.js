@@ -1,15 +1,16 @@
 export default {
   playerGo({ commit, state }, {
     playList,
-    flag,
     song,
-    key
+    index
   }) {
-
+    if (song.audioUrl) {
       commit('setSong', song)
-      commit('setIndex', key)
-
+      commit('setIndex', index)
+    }
+    if (!song.audioUrl) commit('setError', true)
+    if (state.minPlayer === false) commit('setMinPlayer', true)
+    commit('setFullScroll', !!song.audioUrl)
     commit('setPlayList', playList)
-    commit('setFullScroll', flag)
   },
 }

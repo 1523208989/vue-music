@@ -12,7 +12,7 @@
         <card
           v-for="(item, key) of singerView.get(item)"
           :key="key"
-          @click.native="getSinger(item)"
+          @click.native="getSinger(item),setPlayList([])"
         >
           <img slot="img" v-lazy="item.singer_pic" alt />
           <p slot="title">{{ item.singer_name }}</p>
@@ -40,9 +40,10 @@ export default {
       this.$router.push({ path: `/singer/${item.singer_mid}` });
       this.setSinger(item);
     },
-    ...mapMutations(["setSinger"]),
+    ...mapMutations(["setSinger", "setPlayList"]),
     ...mapMutations({
       setSinger: "setSinger",
+      setPlayList: "setPlayList",
     }),
   },
   components: {

@@ -4,7 +4,8 @@ export default {
   playList: [],
   song: {},
   index: -1,
-  play: true,
-  playListUrl: [],
+  error: false,
+  play: false,
   mode: 'sequence',
+  minPlayer: false
 }

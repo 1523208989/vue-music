@@ -16,22 +16,25 @@
         </div>
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
+
       <div ref="layer" class="layer"></div>
-      <scroll :data="songList" @scroll="scroll" ref="scroll">
-        <div ref="songList">
+      <scroll :data="playList" @scroll="scroll" ref="scroll">
+        <div ref="songList" v-show="playList.length">
           <card
-            v-for="(item, key) of songList"
+            v-for="(item, key) of playList"
             :key="key"
             @click.native="selectItem(item, key)"
           >
-            <img
-              slot="img"
-              v-lazy="item.img_url"
-              alt=""
-            />
-            <p slot="title">{{ item.title }}</p>
+            <img slot="img" v-lazy="item.img_url" alt="" />
+            <p slot="title">
+              {{ item.title }}
+              <span class="notPlay"> {{ notPlay(item) }}</span>
+            </p>
             <p slot="author">{{ item.name }}--{{ item.album }}</p>
           </card>
+        </div>
+        <div class="detailLoad" v-show="!playList.length">
+          <loading></loading>
         </div>
       </scroll>
     </div>
@@ -41,8 +44,10 @@
 <script>
 import Scroll from "./scroll";
 import Card from "./card";
-import { mapState } from "vuex";
-import { mapActions } from "vuex";
+import Loading from "./loading";
+import { mapState, mapMutations, mapActions } from "vuex";
+import getAudioApi from "api/player/audio.js";
+
 export default {
   props: {
     img: {
@@ -61,22 +66,49 @@ export default {
       positionY: 0,
     };
   },
+  created() {
+    this._getAudioApi(this.songList);
+  },
   mounted() {
     this.overflow();
     this.getScrollHeight();
   },
   computed: {
-    ...mapState(["singer"]),
+    ...mapState(["singer", "playList"]),
     ...mapState({
       singer: "singer",
+      playList: "playList",
     }),
     singerName() {
       return this.singer.singer_name;
     },
+    loadingShow() {
+      return !this.playList.length;
+    },
+    notPlay() {
+      return (item) => {
+        if (!item.audioUrl) return "(无版权)";
+        return;
+      };
+    },
   },
   methods: {
+    ...mapMutations(["setPlayList", "setMinPlayer"]),
+    ...mapMutations({
+      setPlayList: "setPlayList",
+      setMinPlayer: "setMinPlayer",
+    }),
     ...mapActions(["playerGo"]),
     ...mapActions({ playerGo: "playerGo" }),
+    _getAudioApi(newV) {
+      getAudioApi(newV).then((res) => {
+        res.forEach((item, key) => {
+          newV[key].audioUrl = item.data.req_0.data.midurlinfo[0].purl;
+          return newV[key];
+        });
+        this.setPlayList(newV);
+      });
+    },
     back() {
       this.$router.go(-1);
     },
@@ -92,17 +124,21 @@ export default {
     selectItem(item, key) {
       this.playerGo({
         playList: this.songList,
-        flag: true,
         song: item,
-        key,
+        index: key,
       });
     },
   },
   components: {
     Scroll,
     Card,
+    Loading,
   },
   watch: {
+    songList(newV) {
+      this.setPlayList(newV);
+      this._getAudioApi(newV);
+    },
     positionY(newV) {
       if (-newV >= 0 && -newV <= 240) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
@@ -145,6 +181,10 @@ export default {
   width: 100%;
   height: 100vh;
   z-index: 999;
+  .notPlay {
+    color: @color;
+    font-size: 11px;
+  }
   .layer {
     width: 100%;
     height: 100vh;

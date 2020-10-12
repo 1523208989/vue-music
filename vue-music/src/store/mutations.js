@@ -5,22 +5,25 @@ export default {
   setPlayList(state, item) {
     state.playList = item
   },
-  setPlayListUrl(state, item) {
-    state.playListUrl = item
-  },
   setFullScroll(state, item) {
-    state.fullScroll = item
+    if (state.fullScroll !== item) state.fullScroll = item
   },
   setSong(state, item) {
-    state.song = item
+    if (state.song.mid !== item.mid) state.song = item
   },
   setIndex(state, item) {
-    state.index = item
+    if (state.index !== item) state.index = item
   },
   setMode(state, item) {
     state.mode = item
   },
   setPlay(state, item) {
-    state.play = item
+    if(state.play !== item)state.play = item
+  },
+  setError(state, item) {
+    if (state.error !== item) state.error = item
+  },
+  setMinPlayer(state,item){
+    if (state.minPlayer !== item) state.minPlayer = item
   }
 }

@@ -11,11 +11,11 @@ export default {};
 
 <style lang='less' scoped>
 .loading {
-  margin-top: 50px;
+  padding-top: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
   img {
     width: 25px;
     margin-right: 10px;

@@ -1,6 +1,6 @@
 <template>
-  <div v-show="playList.length">
-    <div id="error" v-show="!playListUrl[index] && index !== -1">
+  <div v-show="minPlayer || playList.length">
+    <div id="error" v-show="error">
       <div>
         <span @click="close">×</span>
         <h4>提示</h4>
@@ -15,7 +15,7 @@
       @leave="leave"
       @after-leave="afterLeave"
     >
-      <div id="player" v-show="fullScroll && playListUrl[index]">
+      <div id="player" v-show="fullScroll && !error">
         <div
           class="fuzzy"
           :style="{ 'background-image': `url(${song.img_url})` }"
@@ -30,28 +30,31 @@
           <h6 class="song_name">{{ song.title }}</h6>
           <p class="singer_name">{{ song.name }}</p>
         </div>
-
         <div class="big_box" ref="cd">
-          <div class="img_box">
+          <div class="img_box rotate" :class="rotate">
             <img v-lazy="song.img_url" alt="" />
           </div>
         </div>
         <div class="player">
           <i class="iconfont iconxunhuan"></i>
-          <i class="iconfont iconshangyishou-yuanshijituantubiao"></i>
+          <i
+            class="iconfont iconshangyishou-yuanshijituantubiao"
+            :class="prevClass"
+            @click="prev"
+          ></i>
           <i :class="`iconfont ${playClass}`" @click="setPlay(!play)"></i>
-          <i class="iconfont iconxiayishou-yuanshijituantubiao"></i>
+          <i
+            class="iconfont iconxiayishou-yuanshijituantubiao"
+            :class="prevClass"
+            @click="next"
+          ></i>
           <i class="iconfont iconshoucang"></i>
         </div>
       </div>
     </transition>
     <transition name="min_player">
-      <div
-        id="min_player"
-        v-show="!fullScroll && playListUrl[index]"
-        @click="full"
-      >
-        <div class="img_box">
+      <div id="min_player" v-show="!fullScroll && index !== -1" @click="full">
+        <div class="img_box rotate" :class="rotate">
           <img v-lazy="song.img_url" alt="" />
         </div>
         <div class="centent">
@@ -62,57 +65,131 @@
         <i class="iconfont icongedan"></i>
       </div>
     </transition>
-    <audio ref="audio" autoplay :src="audioUrl"></audio>
+    <audio
+      ref="audio"
+      autoplay
+      :src="audioUrl"
+      @canplay="songReady"
+      @error="songError"
+    ></audio>
   </div>
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 export default {
-  mounted() {
-    this.setPlay(true);
+  data() {
+    return {
+      songState: false,
+    };
   },
   computed: {
     ...mapState([
       "fullScroll",
+      "minPlayer",
       "index",
       "playList",
-      "playListUrl",
       "song",
       "play",
+      "error",
     ]),
     ...mapState({
       fullScroll: "fullScroll",
-      index: "index",
       playList: "playList",
       song: "song",
       play: "play",
-      playListUrl: "playListUrl",
+      error: "error",
+      index: "index",
+      minPlayer: "minPlayer",
     }),
     playClass() {
       return this.play ? "iconicon_bofang" : "iconbofang";
     },
     audioUrl() {
       return (
-        this.playListUrl[this.index] &&
-        `http://ws.stream.qqmusic.qq.com/${this.playListUrl[this.index]}`
+        this.song.audioUrl &&
+        `http://ws.stream.qqmusic.qq.com/${this.song.audioUrl}`
       );
+    },
+    prevClass() {
+      if (!this.songState) return "stop";
+      return;
+    },
+    rotate() {
+      if (this.play) return;
+      else return "paused";
     },
   },
   methods: {
-    ...mapMutations(["setFullScroll", "setPlay", "setPlayList"]),
+    ...mapMutations([
+      "setFullScroll",
+      "setSong",
+      "setPlay",
+      "setError",
+      "setIndex",
+    ]),
     ...mapMutations({
       setFullScroll: "setFullScroll",
       setPlay: "setPlay",
-      setPlayList: "setPlayList",
+      setError: "setError",
       setIndex: "setIndex",
+      setSong: "setSong",
     }),
     close() {
-      this.setPlayList([]);
-      this.setIndex(-1);
+      this.setError(false);
     },
     down() {
       this.setFullScroll(false);
+    },
+    next() {
+      if (!this.songState) return;
+      if (this.index === this.playList.length - 1) {
+        this.setIndex(-1);
+      }
+      this.setIndex(this.index + 1);
+      this.nextGet(this.playList[this.index]);
+      if (this.song === this.playList[this.index]) {
+        this.setPlay(true);
+        this.$refs.audio.load();
+      } else this.setSong(this.playList[this.index]);
+      this.songState = false;
+    },
+    nextGet(item) {
+      if (!item.audioUrl) {
+        if (this.index === this.playList.length - 1) {
+          this.setIndex(-1);
+        }
+        this.setIndex(this.index + 1);
+        this.nextGet(this.playList[this.index]);
+      }
+    },
+    prev() {
+      if (!this.songState) return;
+      if (this.index === 0) {
+        this.setIndex(this.playList.length);
+      }
+      this.setIndex(this.index - 1);
+      this.prevGet(this.playList[this.index]);
+      if (this.song === this.playList[this.index]) {
+        this.$refs.audio.load();
+        this.setPlay(true);
+      } else this.setSong(this.playList[this.index]);
+      this.songState = false;
+    },
+    prevGet(item) {
+      if (!item.audioUrl) {
+        if (this.index === 0) {
+          this.setIndex(this.playList.length);
+        }
+        this.setIndex(this.index - 1);
+        this.prevGet(this.playList[this.index]);
+      }
+    },
+    songReady() {
+      this.songState = true;
+    },
+    songError() {
+      this.songState = true;
     },
     full() {
       this.setFullScroll(true);
@@ -172,7 +249,9 @@ export default {
       this.setPlay(true);
     },
     play(newV) {
+      this.$nextTick(() => {
         newV ? this.$refs.audio.play() : this.$refs.audio.pause();
+      });
     },
   },
 };
@@ -186,7 +265,6 @@ export default {
   bottom: 0;
   right: 0;
   background-color: #000000a0;
-
   z-index: 99999;
   div {
     position: absolute;
@@ -286,6 +364,12 @@ export default {
       img {
         width: 100%;
       }
+      &.rotate {
+        animation: rotate 20s linear infinite;
+      }
+      &.paused {
+        animation-play-state: paused;
+      }
     }
   }
   .player {
@@ -307,6 +391,9 @@ export default {
       }
       &:last-child {
         font-size: 40px;
+        color: @color1;
+      }
+      &.stop {
         color: @color1;
       }
     }
@@ -332,6 +419,12 @@ export default {
     img {
       width: 100%;
     }
+    &.rotate {
+      animation: rotate 20s linear infinite;
+    }
+    &.paused {
+      animation-play-state: paused;
+    }
   }
   .centent {
     p {
@@ -354,6 +447,16 @@ export default {
     &:last-child {
       margin-right: 25px;
     }
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    transition: all 20s;
   }
 }
 .player-enter-active,

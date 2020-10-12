@@ -2,7 +2,6 @@
 const express = require('express')
 //引用axios
 const axios = require('axios')
-const { response } = require('express')
 //创建网站服务器
 const app = express()
 //创建路由对象

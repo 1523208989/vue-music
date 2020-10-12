@@ -4,7 +4,7 @@ import getSecuritySign from './getSign'
 export default (playList) => {
   let promiseAll = playList.map((item, key) => {
     let data = { "req": { "module": "CDN.SrfCdnDispatchServer", "method": "GetCdnDispatch", "param": { "guid": "6876729600", "calltype": 0, "userip": "" } }, "req_0": { "module": "vkey.GetVkeyServer", "method": "CgiGetVkey", "param": { "guid": "6876729600", "songmid": [item.mid], "songtype": [0], "uin": "1523208989", "loginflag": 1, "platform": "20" } }, "comm": { "uin": 1523208989, "format": "json", "ct": 24, "cv": 0 } }
-    let sign = getSecuritySign(data)
+    let sign = getSecuritySign(data);
     return axios.get('/audioApi', {
       params: {
         '-': 'getplaysongvkey' + (Math.random() + '').replace('0.', ''),
