@@ -35,6 +35,16 @@
             <img v-lazy="song.img_url" alt="" />
           </div>
         </div>
+        <div class="time">
+          <span>{{ songTime.currentTime }}</span>
+          <div class="line">
+            <div class="timeLine" ref="line"></div>
+            <div class="round" ref="round">
+              <div class="minRound"></div>
+            </div>
+          </div>
+          <span>{{ songTime.totalTime }}</span>
+        </div>
         <div class="player">
           <i class="iconfont iconxunhuan"></i>
           <i
@@ -71,6 +81,7 @@
       :src="audioUrl"
       @canplay="songReady"
       @error="songError"
+      @timeupdate="timeUpdate"
     ></audio>
   </div>
 </template>
@@ -81,6 +92,10 @@ export default {
   data() {
     return {
       songState: false,
+      songTime: {
+        currentTime: "0:00",
+        totalTime: "0:00",
+      },
     };
   },
   computed: {
@@ -135,6 +150,25 @@ export default {
       setIndex: "setIndex",
       setSong: "setSong",
     }),
+    timeUpdate(e) {
+      let m = (this.$refs.audio.duration / 60) | 0;
+      let s = this._pad(this.$refs.audio.duration % 60 | 0);
+      let min = (this.$refs.audio.currentTime / 60) | 0;
+      let sec = this._pad(this.$refs.audio.currentTime % 60 | 0);
+      this.songTime.currentTime = `${min}:${sec}`;
+      this.songTime.totalTime = `${m}:${s}`;
+      this.$refs.line.style.width = `${
+        ((this.$refs.audio.currentTime / this.$refs.audio.duration) * 60)
+      }vw`;
+    },
+    _pad(timestamp) {
+      let len = timestamp.toString().length;
+      while (len < 2) {
+        timestamp = "0" + timestamp;
+        len++;
+      }
+      return timestamp;
+    },
     close() {
       this.setError(false);
     },
@@ -372,22 +406,69 @@ export default {
       }
     }
   }
+  .time {
+    color: @color;
+    font-size: 14px;
+    width: 80vw;
+    margin: 0 10vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    bottom: 16%;
+    span {
+      width: 30px;
+    }
+    .line {
+      width: 60vw;
+      height: 4px;
+      border-radius: 2px;
+      background-color: #b6b5b55e;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+    }
+    .timeLine {
+      width: 0;
+      height: 4px;
+      border-radius: 2px;
+      background-color: @color;
+    }
+    .round {
+      margin-left: -5px;
+      width: 10px;
+      height: 10px;
+      background-color: @color;
+      border-radius: 50%;
+      position: relative;
+    }
+    .minRound {
+      width: 50%;
+      height: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background-color: @color1;
+    }
+  }
   .player {
     color: @color;
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 0 30px;
+    padding: 0 20px;
     position: fixed;
-    bottom: 6%;
+    bottom: 5%;
     i {
-      font-size: 46px;
+      font-size: 44px;
       &:first-child {
         font-size: 40px;
       }
       &:nth-child(3) {
-        font-size: 52px;
+        font-size: 50px;
       }
       &:last-child {
         font-size: 40px;
