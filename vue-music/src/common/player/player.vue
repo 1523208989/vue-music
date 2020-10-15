@@ -52,7 +52,7 @@
           <span>{{ songTime.totalTime }}</span>
         </div>
         <div class="player">
-          <i class="iconfont iconxunhuan"></i>
+          <i :class="`iconfont ${playModeCls}`" @click="setPlayMode"></i>
           <i
             class="iconfont iconshangyishou-yuanshijituantubiao"
             :class="prevClass"
@@ -77,7 +77,11 @@
           <p>{{ song.title }}</p>
           <p>{{ song.name }}</p>
         </div>
-        <prog-circle :wd="36" :percent="percent" @click.stop.native="setPlay(!play)">
+        <prog-circle
+          :wd="36"
+          :percent="percent"
+          @click.stop.native="setPlay(!play)"
+        >
           <i :class="`iconfont ${playClass}`"></i
         ></prog-circle>
         <i class="iconfont icongedan i"></i>
@@ -111,6 +115,9 @@ export default {
       percent: 0,
     };
   },
+  mounted() {
+    this.modePlay();
+  },
   computed: {
     ...mapState([
       "fullScroll",
@@ -120,6 +127,7 @@ export default {
       "song",
       "play",
       "error",
+      "mode",
     ]),
     ...mapState({
       fullScroll: "fullScroll",
@@ -129,6 +137,7 @@ export default {
       error: "error",
       index: "index",
       minPlayer: "minPlayer",
+      mode: "mode",
     }),
     playClass() {
       return this.play ? "iconicon_bofang" : "iconbofang";
@@ -147,6 +156,11 @@ export default {
       if (this.play) return;
       else return "paused";
     },
+    playModeCls() {
+      if (this.mode === 0) return "iconxunhuan";
+      if (this.mode === 1) return "iconxunhuan1";
+      return "iconrandom";
+    },
   },
   methods: {
     ...mapMutations([
@@ -155,6 +169,7 @@ export default {
       "setPlay",
       "setError",
       "setIndex",
+      "setMode",
     ]),
     ...mapMutations({
       setFullScroll: "setFullScroll",
@@ -162,6 +177,7 @@ export default {
       setError: "setError",
       setIndex: "setIndex",
       setSong: "setSong",
+      setMode: "setMode",
     }),
     timeUpdate(e) {
       let m = (this.$refs.audio.duration / 60) | 0;
@@ -170,11 +186,8 @@ export default {
       let sec = this._pad(this.$refs.audio.currentTime % 60 | 0);
       this.songTime.currentTime = `${min}:${sec}`;
       this.songTime.totalTime = `${m}:${s}`;
-      this.lineX =
-        (this.$refs.audio.currentTime / this.$refs.audio.duration) *
-        document.body.clientWidth *
-        0.6;
       this.percent = this.$refs.audio.currentTime / this.$refs.audio.duration;
+      this.lineX = this.percent * document.body.clientWidth * 0.6;
       if (!this.touchInit) {
         this.move(this.lineX);
       }
@@ -186,6 +199,24 @@ export default {
         len++;
       }
       return timestamp;
+    },
+    modePlay() {
+      this.$refs.audio.addEventListener("ended", () => {
+        this.setPlay(false);
+        if (this.mode === 0) this.next();
+        if (this.mode === 1) {
+          this.$refs.audio.load();
+          this.setPlay(true);
+        }
+        if (this.mode === 2) {
+          let random = Math.floor(Math.random() * this.playList.length);
+          if (random === this.index) {
+            random = ((random + 1) % this.playList.length) - 1;
+          }
+          this.setIndex(random);
+          this.next();
+        }
+      });
     },
     move(x) {
       this.$refs.line.style.width = `${x}px`;
@@ -223,6 +254,9 @@ export default {
         this.$refs.audio.duration
       ).toFixed(6);
       this.move(moveX);
+    },
+    setPlayMode() {
+      this.setMode((this.mode + 1) % 3);
     },
     close() {
       this.setError(false);
@@ -523,13 +557,13 @@ export default {
     i {
       font-size: 44px;
       &:first-child {
-        font-size: 40px;
+        font-size: 36px;
       }
       &:nth-child(3) {
         font-size: 50px;
       }
       &:last-child {
-        font-size: 40px;
+        font-size: 36px;
         color: @color1;
       }
       &.stop {
@@ -584,7 +618,7 @@ export default {
   i {
     font-size: 36px;
     color: @color;
-    &.i{
+    &.i {
       margin-right: 25px;
     }
   }

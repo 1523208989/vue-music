@@ -6,6 +6,6 @@ export default {
   index: -1,
   error: false,
   play: false,
-  mode: 'sequence',
+  mode: 0,
   minPlayer: false
 }

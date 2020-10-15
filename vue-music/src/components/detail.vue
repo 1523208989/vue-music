@@ -143,17 +143,16 @@ export default {
       if (-newV >= 0 && -newV <= 240) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
         this.$refs.img.style.filter = "brightness(60%)";
-        this.$refs.imgBox.style["z-index"] = -2;
+        this.$refs.imgBox.style["z-index"] = -3;
         this.$refs.imgBox.style.height = "280px";
         this.$refs.scroll.$el.style.flex = 1;
         this.$refs.scroll.$el.style.position = "static";
-        this.$refs.random.style.display = "flex";
+        this.$refs.random.style["z-index"] = -2;
       }
       if (-newV > 240) {
         this.$refs.imgBox.style["z-index"] = 9;
         this.$refs.imgBox.style.height = "45px";
-        this.$refs.img.style.filter = "brightness(30%)";
-        this.$refs.random.style.display = "none";
+        this.$refs.img.style.filter = "brightness(20%)";
       }
       if (-newV < 0) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
@@ -214,7 +213,7 @@ export default {
     position: absolute;
     display: flex;
     color: @color;
-    top: 30%;
+    top: 200px;
     left: 50%;
     padding: 2px;
     transform: translateX(-50%);
@@ -233,7 +232,6 @@ export default {
     .singer_img {
       filter: brightness(60%);
     }
-
     img {
       width: 100%;
     }
