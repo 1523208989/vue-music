@@ -57,10 +57,10 @@ svg {
   top:50%;
   transform: translate(0,-50%);
   circle {
-    stroke:#5d5d68;
-    stroke-width: 10px;
+    stroke:#28273d49;
+    stroke-width: 11px;
     transform-origin: center;
-    transform: rotateX(180deg) rotateZ(90deg) scale(0.8) translate(-1px);
+    transform: rotateX(180deg) rotateZ(90deg) scale(0.8);
     &:first-child {
       stroke:transparent;
     }
