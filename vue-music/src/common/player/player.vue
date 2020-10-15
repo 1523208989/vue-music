@@ -37,7 +37,13 @@
         </div>
         <div class="time">
           <span>{{ songTime.currentTime }}</span>
-          <div class="line">
+          <div
+            class="line"
+            @touchstart="touchStartX"
+            @touchmove="touchMove"
+            @touchend="touchEnd"
+            @click="lineClick"
+          >
             <div class="timeLine" ref="line"></div>
             <div class="round" ref="round">
               <div class="minRound"></div>
@@ -71,8 +77,10 @@
           <p>{{ song.title }}</p>
           <p>{{ song.name }}</p>
         </div>
-        <i :class="`iconfont ${playClass}`" @click.stop="setPlay(!play)"></i>
-        <i class="iconfont icongedan"></i>
+        <prog-circle :wd="36" :percent="percent" @click.stop.native="setPlay(!play)">
+          <i :class="`iconfont ${playClass}`"></i
+        ></prog-circle>
+        <i class="iconfont icongedan i"></i>
       </div>
     </transition>
     <audio
@@ -88,6 +96,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
+import ProgCircle from "./progressCircle";
 export default {
   data() {
     return {
@@ -96,6 +105,10 @@ export default {
         currentTime: "0:00",
         totalTime: "0:00",
       },
+      lineX: 0,
+      dashArray: 10,
+      dashOffset: 10,
+      percent: 0,
     };
   },
   computed: {
@@ -157,9 +170,14 @@ export default {
       let sec = this._pad(this.$refs.audio.currentTime % 60 | 0);
       this.songTime.currentTime = `${min}:${sec}`;
       this.songTime.totalTime = `${m}:${s}`;
-      this.$refs.line.style.width = `${
-        ((this.$refs.audio.currentTime / this.$refs.audio.duration) * 60)
-      }vw`;
+      this.lineX =
+        (this.$refs.audio.currentTime / this.$refs.audio.duration) *
+        document.body.clientWidth *
+        0.6;
+      this.percent = this.$refs.audio.currentTime / this.$refs.audio.duration;
+      if (!this.touchInit) {
+        this.move(this.lineX);
+      }
     },
     _pad(timestamp) {
       let len = timestamp.toString().length;
@@ -168,6 +186,43 @@ export default {
         len++;
       }
       return timestamp;
+    },
+    move(x) {
+      this.$refs.line.style.width = `${x}px`;
+      this.$refs.round.style.transform = `translate3d(${x}px,0,0)`;
+    },
+    touchStartX(e) {
+      this.touchInit = true;
+      this.startX = e.touches[0].pageX;
+    },
+    touchMove(e) {
+      this.endX = e.touches[0].pageX;
+      let moveX = this.endX - this.startX;
+      let lineX = this.lineX;
+      lineX += moveX;
+      if (lineX < 0) lineX = 0;
+      if (lineX >= document.body.clientWidth * 0.6)
+        lineX = document.body.clientWidth * 0.6;
+      this.move(lineX);
+      this.x = lineX;
+    },
+    touchEnd() {
+      if (this.x) {
+        this.$refs.audio.currentTime =
+          (this.x / (document.body.clientWidth * 0.6)) *
+          this.$refs.audio.duration;
+        this.percent = this.x / (document.body.clientWidth * 0.6);
+      }
+      this.touchInit = false;
+    },
+    lineClick(e) {
+      this.touchInit = false;
+      let moveX = e.clientX - document.body.clientWidth * 0.2;
+      this.$refs.audio.currentTime = (
+        (moveX / (document.body.clientWidth * 0.6)) *
+        this.$refs.audio.duration
+      ).toFixed(6);
+      this.move(moveX);
     },
     close() {
       this.setError(false);
@@ -288,6 +343,9 @@ export default {
       });
     },
   },
+  components: {
+    ProgCircle,
+  },
 };
 </script>
 
@@ -326,6 +384,7 @@ export default {
     }
   }
 }
+
 #player {
   position: fixed;
   top: 0;
@@ -424,9 +483,7 @@ export default {
       height: 4px;
       border-radius: 2px;
       background-color: #b6b5b55e;
-      display: flex;
-      justify-content: start;
-      align-items: center;
+      position: relative;
     }
     .timeLine {
       width: 0;
@@ -435,16 +492,17 @@ export default {
       background-color: @color;
     }
     .round {
-      margin-left: -5px;
+      left: -5px;
+      top: -3px;
       width: 10px;
       height: 10px;
       background-color: @color;
       border-radius: 50%;
-      position: relative;
+      position: absolute;
     }
     .minRound {
-      width: 50%;
-      height: 50%;
+      width: 60%;
+      height: 60%;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -480,6 +538,7 @@ export default {
     }
   }
 }
+
 #min_player {
   position: fixed;
   height: 65px;
@@ -525,7 +584,7 @@ export default {
   i {
     font-size: 36px;
     color: @color;
-    &:last-child {
+    &.i{
       margin-right: 25px;
     }
   }
@@ -540,6 +599,7 @@ export default {
     transition: all 20s;
   }
 }
+
 .player-enter-active,
 .player-leave-active {
   transition: all 0.3s;
@@ -550,6 +610,7 @@ export default {
     transition: all 0.3s;
   }
 }
+
 .player-enter,
 .player-leave-to {
   opacity: 0;
@@ -560,10 +621,12 @@ export default {
     transform: translate3d(0, 150px, 0);
   }
 }
+
 .min_player-enter-active,
 .min_player-leave-active {
   transition: all 0.2s;
 }
+
 .min_player-enter,
 .min_player-leave-to {
   opacity: 0;

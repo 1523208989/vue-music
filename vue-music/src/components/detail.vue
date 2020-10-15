@@ -9,11 +9,11 @@
         alt=""
       />
       <p class="singer">{{ singerName }}</p>
+      <div class="random" ref="random">
+        <img src="~assets/image/someImg/播放.png" alt="" />
+        <p>随机播放列表</p>
+      </div>
       <div class="singerImg" ref="imgBox">
-        <div class="random" ref="random">
-          <img src="~assets/image/someImg/播放.png" alt="" />
-          <p>随机播放列表</p>
-        </div>
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
 
@@ -206,6 +206,24 @@ export default {
     left: 50%;
     font-size: @sizem;
   }
+  .random {
+    width: 36%;
+    font-size: @sizexs;
+    border-radius: 16px;
+    border: 1px solid @color;
+    position: absolute;
+    display: flex;
+    color: @color;
+    top: 30%;
+    left: 50%;
+    padding: 2px;
+    transform: translateX(-50%);
+    justify-content: space-around;
+    align-items: center;
+    img {
+      width: 20%;
+    }
+  }
   .singerImg {
     height: 280px;
     position: relative;
@@ -215,24 +233,7 @@ export default {
     .singer_img {
       filter: brightness(60%);
     }
-    .random {
-      width: 36%;
-      font-size: @sizexs;
-      border-radius: 16px;
-      border: 1px solid @color;
-      position: absolute;
-      display: flex;
-      color: @color;
-      top: 75%;
-      left: 50%;
-      padding: 3px;
-      transform: translateX(-50%);
-      justify-content: space-around;
-      align-items: center;
-      img {
-        width: 20%;
-      }
-    }
+
     img {
       width: 100%;
     }
