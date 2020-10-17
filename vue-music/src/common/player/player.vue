@@ -113,6 +113,7 @@ export default {
       dashArray: 10,
       dashOffset: 10,
       percent: 0,
+      songCut: false,
     };
   },
   mounted() {

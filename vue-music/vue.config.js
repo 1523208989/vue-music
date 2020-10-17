@@ -45,6 +45,13 @@ module.exports = {
         pathRewrite: {
           '^/audioApi': ''
         }
+      },
+      '/lyricApi':{
+        target:'https://api.zsfmyz.top/music/lyric',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/lyricApi':''
+        }
       }
     }
   },

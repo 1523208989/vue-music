@@ -35,4 +35,5 @@ app.get('/singerDetailApi/:id', (req, res) => {
     console.log(e);
   })
 })
+
 app.listen(3000)

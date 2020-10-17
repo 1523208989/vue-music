@@ -47,6 +47,7 @@ import Card from "./card";
 import Loading from "./loading";
 import { mapState, mapMutations, mapActions } from "vuex";
 import getAudioApi from "api/player/audio.js";
+import getLyricApi from "api/player/lyric";
 
 export default {
   props: {
@@ -64,10 +65,12 @@ export default {
   data() {
     return {
       positionY: 0,
+      stateSetPl: 0,
     };
   },
   created() {
     this._getAudioApi(this.songList);
+    this._getLyricApi(this.songList);
   },
   mounted() {
     this.overflow();
@@ -104,9 +107,16 @@ export default {
       getAudioApi(newV).then((res) => {
         res.forEach((item, key) => {
           newV[key].audioUrl = item.data.req_0.data.midurlinfo[0].purl;
-          return newV[key];
         });
-        this.setPlayList(newV);
+        this.stateSetPl++;
+      });
+    },
+    _getLyricApi(newV) {
+      getLyricApi(newV).then((res) => {
+        res.forEach((item, key) => {
+          newV[key].lyric = item.data.data.lyric;
+        });
+        this.stateSetPl++;
       });
     },
     back() {
@@ -138,6 +148,10 @@ export default {
     songList(newV) {
       this.setPlayList(newV);
       this._getAudioApi(newV);
+      this._getLyricApi(newV);
+    },
+    stateSetPl(newV) {
+      newV === 2 && this.setPlayList(this.songList);
     },
     positionY(newV) {
       if (-newV >= 0 && -newV <= 240) {

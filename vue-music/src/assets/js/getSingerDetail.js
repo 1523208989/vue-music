@@ -1,10 +1,11 @@
 class Song {
-  constructor(name, title, album, mid, img_url) {
+  constructor(name, title, album, mid, img_url,id) {
     this.name = name;
     this.title = title;
     this.album = album;
     this.mid = mid;
-    this.img_url = img_url
+    this.img_url = img_url;
+    this.id=id
   }
 }
 export default (songList) => {
@@ -14,6 +15,6 @@ export default (songList) => {
     })
     return new Song(singers.join('/'), item.songInfo.title,
      item.songInfo.album.name, item.songInfo.mid, 
-     `https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.songInfo.album.mid}.jpg?max_age=2592000`)
+     `https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.songInfo.album.mid}.jpg?max_age=2592000`,item.songInfo.id)
   })
 }
