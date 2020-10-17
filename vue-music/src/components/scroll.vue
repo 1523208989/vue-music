@@ -10,7 +10,6 @@ import BScroll from "better-scroll";
 export default {
   props: {
     data: {
-      type: Array,
       default() {
         return [];
       },
@@ -30,8 +29,7 @@ export default {
     _initScroll() {
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
-        click: true,
-        stopPropagation: true,
+        click: true,       
       });
       this.scroll.on("scroll", (position) => {
         this.$emit("scroll", position.y);
@@ -42,7 +40,7 @@ export default {
     },
   },
   watch: {
-    data() {
+    data(newV) {
       this.$nextTick(() => {
         this._refresh();
       });

@@ -15,7 +15,13 @@
       @leave="leave"
       @after-leave="afterLeave"
     >
-      <div id="player" v-show="fullScroll && !error">
+      <div
+        id="player"
+        v-show="fullScroll && !error"
+        @touchstart="lytouchs"
+        @touchmove="lytouchm"
+        @touchend="lytouche"
+      >
         <div
           class="fuzzy"
           :style="{ 'background-image': `url(${song.img_url})` }"
@@ -30,19 +36,29 @@
           <h6 class="song_name">{{ song.title }}</h6>
           <p class="singer_name">{{ song.name }}</p>
         </div>
-        <div class="big_box" ref="cd">
-          <div class="img_box rotate" :class="rotate">
-            <img v-lazy="song.img_url" alt="" />
+        <div class="cd-lyric">
+          <div class="cdPage" ref="cdPage">
+            <div class="big_box" ref="cd">
+              <div class="img_box rotate" :class="rotate">
+                <img v-lazy="song.img_url" alt="" />
+              </div>
+            </div>
+            <ul>
+              <li>11155526</li>
+              <li>21155526</li>
+              <li>31155526</li>
+            </ul>
           </div>
+          <lyric ref="lyricPage" v-if="song.lyric" :currentTime='currentTime'> </lyric>
         </div>
         <div class="time">
           <span>{{ songTime.currentTime }}</span>
           <div
             class="line"
-            @touchstart="touchStartX"
-            @touchmove="touchMove"
-            @touchend="touchEnd"
-            @click="lineClick"
+            @touchstart.stop="touchStartX"
+            @touchmove.stop="touchMove"
+            @touchend.stop="touchEnd"
+            @click.stop="lineClick"
           >
             <div class="timeLine" ref="line"></div>
             <div class="round" ref="round">
@@ -58,7 +74,7 @@
             :class="prevClass"
             @click="prev"
           ></i>
-          <i :class="`iconfont ${playClass}`" @click="setPlay(!play)"></i>
+          <i :class="`iconfont ${playClass}`" @click.stop="setPlay(!play)"></i>
           <i
             class="iconfont iconxiayishou-yuanshijituantubiao"
             :class="prevClass"
@@ -101,6 +117,7 @@
 import { mapState, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 import ProgCircle from "./progressCircle";
+import Lyric from "./playerLyric";
 export default {
   data() {
     return {
@@ -109,11 +126,13 @@ export default {
         currentTime: "0:00",
         totalTime: "0:00",
       },
+      currentTime:0,
       lineX: 0,
       dashArray: 10,
       dashOffset: 10,
       percent: 0,
       songCut: false,
+      lyricShow: false,
     };
   },
   mounted() {
@@ -161,6 +180,9 @@ export default {
       if (this.mode === 0) return "iconxunhuan";
       if (this.mode === 1) return "iconxunhuan1";
       return "iconrandom";
+    },
+    lyricScroll() {
+      return this.$refs.lyricPage.state;
     },
   },
   methods: {
@@ -223,6 +245,58 @@ export default {
       this.$refs.line.style.width = `${x}px`;
       this.$refs.round.style.transform = `translate3d(${x}px,0,0)`;
     },
+    lytouchs(e) {
+      this.lyricM = 0;
+      this.lyricS = e.touches[0].pageX;
+    },
+    lytouchm(e) {
+      this.lyricM = e.touches[0].pageX - this.lyricS;
+      if (!this.lyricShow) {
+        if (this.lyricM < 0) {
+          this.$refs.cdPage.style.opacity = `${
+            (window.innerWidth + this.lyricM) / window.innerWidth
+          }`;
+          this.$refs.lyricPage.$el.style.transform = `translate3d(${this.lyricM}px,0,0)`;
+        } else {
+          this.$refs.cdPage.style.opacity = `${
+            1 - this.lyricM / window.innerWidth
+          }`;
+          this.$refs.lyricPage.$el.style.transform = `translate3d(${
+            this.lyricM - window.innerWidth * 2
+          }px,0,0)`;
+        }
+      } else {
+        if (this.lyricM < 0) {
+          this.$refs.cdPage.style.opacity = `${
+            1 - (window.innerWidth + this.lyricM) / window.innerWidth
+          }`;
+        } else {
+          this.$refs.cdPage.style.opacity = `${
+            this.lyricM / window.innerWidth
+          }`;
+        }
+        this.$refs.lyricPage.$el.style.transform = `translate3d(${
+          this.lyricM - window.innerWidth
+        }px,0,0)`;
+      }
+    },
+    lytouche() {
+      if (!this.lyricShow) {
+        if (Math.abs(this.lyricM) > window.innerWidth * 0.3) {
+          this.lyricShow = true;
+        } else {
+          this.$refs.lyricPage.$el.style.transform = "";
+          this.$refs.cdPage.style.opacity = "";
+        }
+      } else {
+        if (Math.abs(this.lyricM) > window.innerWidth * 0.3)
+          this.lyricShow = false;
+        else {
+          this.$refs.lyricPage.$el.style.transform = `translate3d(${-window.innerWidth}px,0,0)`;
+          this.$refs.cdPage.style.opacity = 0;
+        }
+      }
+    },
     touchStartX(e) {
       this.touchInit = true;
       this.startX = e.touches[0].pageX;
@@ -245,6 +319,7 @@ export default {
           this.$refs.audio.duration;
         this.percent = this.x / (document.body.clientWidth * 0.6);
       }
+      this.currentTime=this.$refs.audio.currentTime
       this.touchInit = false;
     },
     lineClick(e) {
@@ -255,6 +330,7 @@ export default {
         this.$refs.audio.duration
       ).toFixed(6);
       this.move(moveX);
+      this.currentTime=this.$refs.audio.currentTime
     },
     setPlayMode() {
       this.setMode((this.mode + 1) % 3);
@@ -327,10 +403,10 @@ export default {
             transform: `translate3d(${x}px,${y}px,0) scale(${scale})`,
           },
           60: {
-            transform: `translate3d(-50%,0,0) scale(1.1)`,
+            transform: `translate3d(0,0,0) scale(1.1)`,
           },
           100: {
-            transform: `translate3d(-50%,0,0) scale(1)`,
+            transform: `translate3d(0,0,0) scale(1)`,
           },
         },
         presets: {
@@ -356,8 +432,8 @@ export default {
     getPosition() {
       const min_x = window.innerWidth * 0.07 + 10;
       const min_y = window.innerHeight - 32.5;
-      const full_x = window.innerWidth / 2 + window.innerWidth * 0.45;
-      const full_y = 90 + window.innerWidth * 0.45;
+      const full_x = window.innerWidth / 2;
+      const full_y = 20 + window.innerHeight * 0.1 + window.innerWidth * 0.45;
       const x = min_x - full_x;
       const y = min_y - full_y;
       const scale = 14 / 90;
@@ -377,9 +453,19 @@ export default {
         newV ? this.$refs.audio.play() : this.$refs.audio.pause();
       });
     },
+    lyricShow(newV) {
+      if (newV) {
+        this.$refs.lyricPage.$el.style.transform = `translate3d(${-window.innerWidth}px,0,0)`;
+        this.$refs.cdPage.style.opacity = 0;
+      } else {
+        this.$refs.lyricPage.$el.style.transform = "";
+        this.$refs.cdPage.style.opacity = "";
+      }
+    },
   },
   components: {
     ProgCircle,
+    Lyric,
   },
 };
 </script>
@@ -455,7 +541,7 @@ export default {
       position: absolute;
       width: 45%;
       left: 50%;
-      top: 25px;
+      top: 20px;
       transform: translate(-50%, -50%);
       color: @color;
       font-size: @sizem;
@@ -466,50 +552,69 @@ export default {
     .singer_name {
       position: absolute;
       left: 50%;
-      top: 50px;
+      top: 45px;
       transform: translate(-50%, -50%);
       color: @color;
       font-size: @sizexs;
     }
   }
-  .big_box {
-    position: fixed;
-    top: 90px;
-    left: 50%;
-    transform: translate(-50%);
-    width: 90vw;
-    height: 90vw;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .img_box {
-      width: 84vw;
-      height: 84vw;
-      border-radius: 50%;
-      overflow: hidden;
-      img {
+  .cd-lyric {
+    width: 100vw;
+    padding: 20px 0;
+    position: relative;
+    overflow: hidden;
+    .cdPage {
+      .big_box {
+        margin: 0 auto 10px;
+        width: 90vw;
+        height: 90vw;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .img_box {
+          width: 84vw;
+          height: 84vw;
+          border-radius: 50%;
+          overflow: hidden;
+          img {
+            width: 100%;
+          }
+          &.rotate {
+            animation: rotate 20s linear infinite;
+          }
+          &.paused {
+            animation-play-state: paused;
+          }
+        }
+      }
+      ul {
         width: 100%;
-      }
-      &.rotate {
-        animation: rotate 20s linear infinite;
-      }
-      &.paused {
-        animation-play-state: paused;
+        color: @color1;
+        font-size: 16px;
+        list-style-type: none;
+        text-align: center;
+        li {
+          line-height: 20px;
+          &:nth-child(2) {
+            color: @color;
+            font-size: 18px;
+            line-height: 26px;
+          }
+        }
       }
     }
   }
+
   .time {
     color: @color;
     font-size: 14px;
     width: 80vw;
-    margin: 0 10vw;
+    margin: 20px 10vw;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed;
-    bottom: 16%;
     span {
       width: 30px;
     }
@@ -553,8 +658,6 @@ export default {
     justify-content: space-around;
     align-items: center;
     padding: 0 20px;
-    position: fixed;
-    bottom: 5%;
     i {
       font-size: 44px;
       &:first-child {
