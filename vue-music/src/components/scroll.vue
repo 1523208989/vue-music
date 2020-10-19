@@ -29,7 +29,7 @@ export default {
     _initScroll() {
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
-        click: true,       
+        click: true,
       });
       this.scroll.on("scroll", (position) => {
         this.$emit("scroll", position.y);

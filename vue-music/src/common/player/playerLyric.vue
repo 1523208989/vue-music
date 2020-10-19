@@ -38,25 +38,16 @@ export default {
   mounted() {
     this.$refs.scroll.$el.style.height = "auto";
     this.lines = this.lyric.lines;
+    this.$emit("lyc", this.lines[0].txt);
   },
   computed: {
-    ...mapState(["song", "play"]),
-    ...mapState({ song: "song", play: "play" }),
+    ...mapState(["song"]),
+    ...mapState({ song: "song" }),
   },
   methods: {
-    hanlder({ lineNum, txt }) {
-      this.index = lineNum;
-      if (this.index > 6 && this.index < this.lines.length - 5)
-        this.$refs.scroll.scroll.scrollToElement(
-          `#id${lineNum}`,
-          1000,
-          0,
-          true
-        );
-    },
+    hanlder({ lineNum, txt }) {},
     _initLyric() {
       this.lyric = new Lyric(this.song.lyric, this.hanlder);
-      this.lyric.play();
     },
   },
   components: {
@@ -67,31 +58,27 @@ export default {
       this.lyric.stop();
       this.index = 0;
       this._initLyric();
-      this.$refs.scroll.scroll.scrollTo(0, 0);
-    },
-    play(newV) {
-      this.lyric.togglePlay();
+      this.lines = this.lyric.lines;
+      this.$refs.scroll.scroll.scrollTo(0, 1000);
     },
     currentTime(newV) {
       this.lyric.seek(newV * 1000);
-      this.index =
+      let len =
         this.lyric.lines.filter((item) => {
           return item.time <= newV * 1000;
         }).length - 1;
-      if (this.index > 6 && this.index < this.lines.length - 5)
+      if (this.index === len) return;
+      this.index = len;
+      if (this.index < 0) this.index = 0;
+      if (this.index > 4 && this.index < this.lines.length - 4)
+        this.$refs.scroll.scroll.scrollToElement(`#id${this.index - 4}`, 1000);
+      if (this.index >= this.lines.length - 4)
         this.$refs.scroll.scroll.scrollToElement(
-          `#id${this.index}`,
-          0,
-          0,
-          true
+          `#id${this.lines.length - 10}`,
+          1000
         );
-      else
-        this.$refs.scroll.scroll.scrollToElement(
-          `#id${this.lines.length - 5}`,
-          0,
-          0,
-          true
-        );
+      if (this.index <= 4) this.$refs.scroll.scroll.scrollTo(0, 0);
+      this.$emit("lyc", this.lines[this.index].txt);
     },
   },
 };
@@ -107,13 +94,20 @@ export default {
   display: flex;
   text-align: center;
   ul {
-    width: 100%;
+    width: 80%;
+    margin: 0 auto;
     color: @color1;
     list-style-type: none;
-    line-height: 36px;
     font-size: 15px;
-    .hl {
-      color: #f3f2f1;
+    li {
+      width: 100%;
+      line-height: calc((90vw + 110px) * 0.1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &.hl {
+        color: #f3f2f1;
+      }
     }
   }
 }

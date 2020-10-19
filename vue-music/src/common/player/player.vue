@@ -15,13 +15,7 @@
       @leave="leave"
       @after-leave="afterLeave"
     >
-      <div
-        id="player"
-        v-show="fullScroll && !error"
-        @touchstart="lytouchs"
-        @touchmove="lytouchm"
-        @touchend="lytouche"
-      >
+      <div id="player" v-show="fullScroll && !error">
         <div
           class="fuzzy"
           :style="{ 'background-image': `url(${song.img_url})` }"
@@ -36,29 +30,37 @@
           <h6 class="song_name">{{ song.title }}</h6>
           <p class="singer_name">{{ song.name }}</p>
         </div>
-        <div class="cd-lyric">
+        <div
+          class="cd-lyric"
+          @touchstart="lytouchs"
+          @touchmove="lytouchm"
+          @touchend="lytouche"
+          @click="toggle"
+        >
           <div class="cdPage" ref="cdPage">
             <div class="big_box" ref="cd">
               <div class="img_box rotate" :class="rotate">
                 <img v-lazy="song.img_url" alt="" />
               </div>
             </div>
-            <ul>
-              <li>11155526</li>
-              <li>21155526</li>
-              <li>31155526</li>
-            </ul>
+            <p>{{ lyc }}</p>
           </div>
-          <lyric ref="lyricPage" v-if="song.lyric" :currentTime='currentTime'> </lyric>
+          <lyric
+            ref="lyricPage"
+            v-if="song.lyric"
+            :currentTime="currentTime"
+            @lyc="getLyc"
+          >
+          </lyric>
         </div>
         <div class="time">
           <span>{{ songTime.currentTime }}</span>
           <div
             class="line"
-            @touchstart.stop="touchStartX"
-            @touchmove.stop="touchMove"
-            @touchend.stop="touchEnd"
-            @click.stop="lineClick"
+            @touchstart="touchStartX"
+            @touchmove="touchMove"
+            @touchend="touchEnd"
+            @click="lineClick"
           >
             <div class="timeLine" ref="line"></div>
             <div class="round" ref="round">
@@ -74,7 +76,7 @@
             :class="prevClass"
             @click="prev"
           ></i>
-          <i :class="`iconfont ${playClass}`" @click.stop="setPlay(!play)"></i>
+          <i :class="`iconfont ${playClass}`" @click="setPlay(!play)"></i>
           <i
             class="iconfont iconxiayishou-yuanshijituantubiao"
             :class="prevClass"
@@ -126,13 +128,14 @@ export default {
         currentTime: "0:00",
         totalTime: "0:00",
       },
-      currentTime:0,
+      currentTime: 0,
       lineX: 0,
       dashArray: 10,
       dashOffset: 10,
       percent: 0,
       songCut: false,
       lyricShow: false,
+      lyc: "",
     };
   },
   mounted() {
@@ -158,6 +161,7 @@ export default {
       index: "index",
       minPlayer: "minPlayer",
       mode: "mode",
+      lycState: true,
     }),
     playClass() {
       return this.play ? "iconicon_bofang" : "iconbofang";
@@ -207,13 +211,17 @@ export default {
       let s = this._pad(this.$refs.audio.duration % 60 | 0);
       let min = (this.$refs.audio.currentTime / 60) | 0;
       let sec = this._pad(this.$refs.audio.currentTime % 60 | 0);
-      this.songTime.currentTime = `${min}:${sec}`;
       this.songTime.totalTime = `${m}:${s}`;
       this.percent = this.$refs.audio.currentTime / this.$refs.audio.duration;
       this.lineX = this.percent * document.body.clientWidth * 0.6;
       if (!this.touchInit) {
         this.move(this.lineX);
+        this.songTime.currentTime = `${min}:${sec}`;
+        this.currentTime = this.$refs.audio.currentTime;
       }
+    },
+    getLyc(lyc) {
+      this.lyc = lyc;
     },
     _pad(timestamp) {
       let len = timestamp.toString().length;
@@ -246,11 +254,22 @@ export default {
       this.$refs.round.style.transform = `translate3d(${x}px,0,0)`;
     },
     lytouchs(e) {
+      this.allowMX = "";
       this.lyricM = 0;
       this.lyricS = e.touches[0].pageX;
+      this.lyricSY = e.touches[0].pageY;
     },
     lytouchm(e) {
       this.lyricM = e.touches[0].pageX - this.lyricS;
+      let lyricMY = e.touches[0].pageY - this.lyricSY;
+      if (!this.allowMX) {
+        if (Math.abs(lyricMY) > Math.abs(this.lyricM)) this.allowMX = "no";
+        else this.allowMX = "yes";
+      }
+      if (this.allowMX === "no") {
+        this.lyricM = 0;
+        return;
+      }
       if (!this.lyricShow) {
         if (this.lyricM < 0) {
           this.$refs.cdPage.style.opacity = `${
@@ -298,10 +317,11 @@ export default {
       }
     },
     touchStartX(e) {
-      this.touchInit = true;
+      this.touchInit = false;
       this.startX = e.touches[0].pageX;
     },
     touchMove(e) {
+      if (!this.touchInit) this.touchInit = true;
       this.endX = e.touches[0].pageX;
       let moveX = this.endX - this.startX;
       let lineX = this.lineX;
@@ -311,26 +331,31 @@ export default {
         lineX = document.body.clientWidth * 0.6;
       this.move(lineX);
       this.x = lineX;
+      this.currentTime =
+        (lineX / (document.body.clientWidth * 0.6)) * this.$refs.audio.duration;
+      let min = (this.currentTime / 60) | 0;
+      let sec = this._pad(this.currentTime % 60 | 0);
+      this.songTime.currentTime = `${min}:${sec}`;
     },
     touchEnd() {
-      if (this.x) {
+      if (this.x || this.x === 0) {
         this.$refs.audio.currentTime =
           (this.x / (document.body.clientWidth * 0.6)) *
           this.$refs.audio.duration;
         this.percent = this.x / (document.body.clientWidth * 0.6);
       }
-      this.currentTime=this.$refs.audio.currentTime
+      this.play || this.setPlay(true);
       this.touchInit = false;
     },
     lineClick(e) {
-      this.touchInit = false;
       let moveX = e.clientX - document.body.clientWidth * 0.2;
-      this.$refs.audio.currentTime = (
-        (moveX / (document.body.clientWidth * 0.6)) *
-        this.$refs.audio.duration
-      ).toFixed(6);
+      this.$refs.audio.currentTime =
+        (moveX / (document.body.clientWidth * 0.6)) * this.$refs.audio.duration;
       this.move(moveX);
-      this.currentTime=this.$refs.audio.currentTime
+      this.play || this.setPlay(true);
+    },
+    toggle() {
+      this.lyricShow = !this.lyricShow;
     },
     setPlayMode() {
       this.setMode((this.mode + 1) % 3);
@@ -589,20 +614,16 @@ export default {
           }
         }
       }
-      ul {
-        width: 100%;
+      p {
+        width: 60%;
+        margin: 0 auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         color: @color1;
-        font-size: 16px;
-        list-style-type: none;
+        font-size: 15px;
+        line-height: 60px;
         text-align: center;
-        li {
-          line-height: 20px;
-          &:nth-child(2) {
-            color: @color;
-            font-size: 18px;
-            line-height: 26px;
-          }
-        }
       }
     }
   }
