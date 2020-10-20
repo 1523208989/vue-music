@@ -2,8 +2,10 @@
 const express = require('express')
 //引用axios
 const axios = require('axios')
+const { response } = require('express')
 //创建网站服务器
 const app = express()
+
 //创建路由对象
 const apiRouter = express.Router()
 
@@ -23,6 +25,7 @@ apiRouter.get('/', (req, res) => {
   })
 })
 app.get('/singerDetailApi/:id', (req, res) => {
+
   axios.get('https://u.y.qq.com/cgi-bin/musics.fcg', {
     headers: {
       origin: 'https://y.qq.com',
@@ -35,5 +38,18 @@ app.get('/singerDetailApi/:id', (req, res) => {
     console.log(e);
   })
 })
-
-app.listen(3000)
+app.get('/songListDetailApi', (req, res) => {
+ 
+  axios.get('https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg', {
+    headers: {
+      origin: 'https://y.qq.com',
+      referer: `https://y.qq.com/n/yqq/playlist/${req.query.disstid}.html`
+    },
+    params: req.query
+  }).then(response => {
+    res.send(response.cdlist[0].songlist)
+  }).catch(e => {
+    console.log(e);
+  })
+})
+app.listen(3000);

@@ -1,5 +1,5 @@
 <template>
-  <div v-show="minPlayer || playList.length">
+  <div v-show="minPlayer || playList.length" style="z-index:9999">
     <div id="error" v-show="error">
       <div>
         <span @click="close">×</span>
@@ -576,8 +576,12 @@ export default {
     }
     .singer_name {
       position: absolute;
+      width: 40vw;
       left: 50%;
       top: 45px;
+        white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
       transform: translate(-50%, -50%);
       color: @color;
       font-size: @sizexs;
@@ -699,16 +703,11 @@ export default {
 }
 
 #min_player {
-  position: fixed;
   height: 65px;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background-color: rgb(40, 39, 61);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 9999;
   .img_box {
     width: 14vw;
     height: 14vw;

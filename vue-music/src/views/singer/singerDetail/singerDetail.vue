@@ -1,6 +1,6 @@
 <template>
   <detail
-    id="singerDtail"
+    id="singerDetail"
     v-if="songList.length"
     :img="singerImg"
     :songList="songList"

@@ -38,6 +38,7 @@ export default {};
   }
   .songContent {
     height: @cardwidth;
+    width: calc(100% - 90px);
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -46,6 +47,11 @@ export default {};
       &:first-child {
         font-size: @sizexs;
         color: @color1;
+      }
+      &:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }

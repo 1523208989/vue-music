@@ -10,6 +10,7 @@
       <song-list :songList="songListApi"></song-list>
       <loading v-show="!songListApi.length"></loading
     ></scroll>
+    <router-view></router-view>
   </div>
 </template>
 

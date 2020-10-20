@@ -16,7 +16,6 @@
       <div class="singerImg" ref="imgBox">
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
-
       <div ref="layer" class="layer"></div>
       <scroll :data="playList" @scroll="scroll" ref="scroll">
         <div ref="songList" v-show="playList.length">
@@ -37,6 +36,7 @@
           <loading></loading>
         </div>
       </scroll>
+      <div ref="own" :class="marginBT"></div>
     </div>
   </transition>
 </template>
@@ -74,13 +74,14 @@ export default {
   },
   mounted() {
     this.overflow();
-    this.getScrollHeight();
   },
   computed: {
-    ...mapState(["singer", "playList"]),
+    ...mapState(["singer", "playList", "index", "fullScroll"]),
     ...mapState({
       singer: "singer",
       playList: "playList",
+      fullScroll: "fullScroll",
+      index: "index",
     }),
     singerName() {
       return this.singer.singer_name;
@@ -94,6 +95,10 @@ export default {
         return;
       };
     },
+    marginBT(){
+      if(this.index!==-1&&!this.fullScroll)return 'marginBT';
+      return ''
+    }
   },
   methods: {
     ...mapMutations(["setPlayList", "setMinPlayer"]),
@@ -128,9 +133,6 @@ export default {
     overflow() {
       this.$refs.scroll.$el.style.overflow = "visible";
     },
-    getScrollHeight() {
-      this.scrollH = this.$refs.scroll.$el.clientHeight;
-    },
     selectItem(item, key) {
       this.playerGo({
         playList: this.songList,
@@ -154,30 +156,25 @@ export default {
       newV === 2 && this.setPlayList(this.songList);
     },
     positionY(newV) {
-      if (-newV >= 0 && -newV <= 240) {
+      if (-newV >= 0 && -newV <= 235) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
         this.$refs.img.style.filter = "brightness(60%)";
+        this.$refs.random.style["z-index"] = -2;
         this.$refs.imgBox.style["z-index"] = -3;
         this.$refs.imgBox.style.height = "280px";
-        this.$refs.scroll.$el.style.flex = 1;
-        this.$refs.scroll.$el.style.position = "static";
-        this.$refs.random.style["z-index"] = -2;
+        this.$refs.imgBox.style["margin-bottom"] = 0;
       }
-      if (-newV > 240) {
+      if (-newV > 235) {
+        this.$refs.img.style.filter = "brightness(20%)";
+        this.$refs.imgBox.style["margin-bottom"] = "240px";
         this.$refs.imgBox.style["z-index"] = 9;
         this.$refs.imgBox.style.height = "45px";
-        this.$refs.img.style.filter = "brightness(20%)";
       }
       if (-newV < 0) {
         this.$refs.layer.style.transform = `translate3d(0,${newV}px,0)`;
         this.$refs.imgBox.style.transform = `scale(${1 + newV / 600})`;
         this.$refs.imgBox.style.height = `${280 + newV}px`;
-      }
-      if (-newV < 0 || -newV > 240) {
-        this.$refs.scroll.$el.style.height = `${this.scrollH}px`;
-        this.$refs.scroll.$el.style.flex = 0;
-        this.$refs.scroll.$el.style.position = "fixed";
-        this.$refs.scroll.$el.style.bottom = 0;
+        this.$refs.imgBox.style["margin-bottom"] = `${-newV}px`;
       }
     },
   },
@@ -249,6 +246,9 @@ export default {
     img {
       width: 100%;
     }
+  }
+  .marginBT{
+    height: 65px;
   }
 }
 .detail-leave-active,

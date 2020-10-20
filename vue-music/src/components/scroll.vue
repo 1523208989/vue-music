@@ -1,12 +1,12 @@
 <template>
-  <div class="scroll-wrapper" ref="scroll">
+  <div class="scroll-wrapper"  ref="scroll">
     <slot></slot>
   </div>
 </template>
 
 <script>
 import BScroll from "better-scroll";
-
+import { mapState } from "vuex";
 export default {
   props: {
     data: {
@@ -24,6 +24,14 @@ export default {
   },
   activated() {
     this._refresh();
+  },
+  computed: {
+    ...mapState(["index", "fullScroll"]),
+    ...mapState({ index: "index", fullScroll: "fullScroll" }),
+    marginBT() {
+      if (this.index !== -1 && !this.fullScroll) return true;
+      return false;
+    },
   },
   methods: {
     _initScroll() {
@@ -48,6 +56,11 @@ export default {
     imgLoad() {
       this._refresh();
     },
+    marginBT(){
+           this.$nextTick(() => {
+        this._refresh();
+      });
+    }
   },
 };
 </script>
