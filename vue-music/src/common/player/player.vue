@@ -556,7 +556,7 @@ export default {
     height: 10vh;
     .down {
       position: absolute;
-      width: 35px;
+      width: 33px;
       top: 25px;
       left: 40px;
       transform: translate(-50%, -50%);

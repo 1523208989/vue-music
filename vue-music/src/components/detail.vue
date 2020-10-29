@@ -72,10 +72,6 @@ export default {
       stateSetPl: 0,
     };
   },
-  created() {
-    this._getAudioApi(this.songList);
-    this._getLyricApi(this.songList);
-  },
   mounted() {
     this.overflow();
   },
@@ -152,7 +148,6 @@ export default {
   },
   watch: {
     songList(newV) {
-      this.setPlayList(newV);
       this._getAudioApi(newV);
       this._getLyricApi(newV);
     },

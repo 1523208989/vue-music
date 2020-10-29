@@ -1,7 +1,6 @@
 <template>
   <detail
-    id="singerDetail"
-    v-if='songList.length'
+    id="singerDetail"   
     :img="singerImg"
     :songList="songList"
   ></detail>
@@ -31,7 +30,6 @@ export default {
   methods: {
     _getDetailApi() {
       singerDetailApi(this.singer.singer_mid).then((res) => {
-        console.log(res.data.data.list);
         this.songList = getSongList(res.data.data.list);
       });
     },
