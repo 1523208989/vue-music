@@ -4,13 +4,15 @@
     v-if="songList.length"
     :img="singer.imgurl"
     :songList="songList"
+    :title="singer.dissname"
   ></detail>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import Detail from "components/detail";
-import getSongList from "api/home/songListDetail";
+import songListDetailApi from "api/home/songListDetail";
+import getSongList from "assets/js/getSongListDetail";
 export default {
   data() {
     return {
@@ -26,8 +28,10 @@ export default {
   },
   methods: {
     _getSongList() {
-      getSongList(this.singer.dissid).then((res) => {
-        this.songList = res;
+      songListDetailApi(this.singer.dissid).then((res) => {
+        res = res.data.data.songlist;
+        if (res.length > 66) this.songList = getSongList(res.slice(0, 66));
+        else this.songlist = getSongList(res);
       });
     },
   },

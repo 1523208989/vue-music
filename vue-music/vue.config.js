@@ -28,9 +28,11 @@ module.exports = {
         pathRewrite: {}
       },
       '/songListDetailApi': {
-        target: 'http://localhost:3000',
+        target: 'https://api.qq.jsososo.com/songlist',
         changeOrigin: true,
-        pathRewrite: {}
+        pathRewrite: {
+          '^/songListDetailApi': ""
+        }
       },
       '/singerListApi': {
         target: 'https://u.y.qq.com/cgi-bin/musics.fcg',
@@ -40,9 +42,11 @@ module.exports = {
         }
       },
       '/singerDetailApi': {
-        target: 'http://localhost:3000',
+        target: 'https://api.qq.jsososo.com/singer/songs',
         changeorigin: true,
-        pathRewrite: {}
+        pathRewrite: {
+          '^/singerDetailApi': ''
+        }
       },
       '/audioApi': {
         target: 'https://u.y.qq.com/cgi-bin/musics.fcg',
@@ -51,11 +55,11 @@ module.exports = {
           '^/audioApi': ''
         }
       },
-      '/lyricApi':{
-        target:'https://api.zsfmyz.top/music/lyric',
-        changeOrigin:true,
-        pathRewrite:{
-          '^/lyricApi':''
+      '/lyricApi': {
+        target: 'https://api.zsfmyz.top/music/lyric',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lyricApi': ''
         }
       }
     }

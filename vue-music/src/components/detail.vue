@@ -8,7 +8,7 @@
         src="~assets/image/someImg/back.png"
         alt=""
       />
-      <p class="singer">{{ singerName }}</p>
+      <p class="singer">{{ singerName||title }}</p>
       <div class="random" ref="random">
         <img src="~assets/image/someImg/播放.png" alt="" />
         <p>随机播放列表</p>
@@ -61,6 +61,10 @@ export default {
         return [];
       },
     },
+    title: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -95,10 +99,10 @@ export default {
         return;
       };
     },
-    marginBT(){
-      if(this.index!==-1&&!this.fullScroll)return 'marginBT';
-      return ''
-    }
+    marginBT() {
+      if (this.index !== -1 && !this.fullScroll) return "marginBT";
+      return "";
+    },
   },
   methods: {
     ...mapMutations(["setPlayList", "setMinPlayer"]),
@@ -215,6 +219,11 @@ export default {
     color: @color;
     left: 50%;
     font-size: @sizem;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 60%;
   }
   .random {
     width: 36%;
@@ -247,7 +256,7 @@ export default {
       width: 100%;
     }
   }
-  .marginBT{
+  .marginBT {
     height: 65px;
   }
 }

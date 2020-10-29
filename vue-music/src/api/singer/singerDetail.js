@@ -10,7 +10,7 @@ export default (id) => {
     sign += str[Math.floor(Math.random() * 36)];
   }
   sign += window.__sign_hash_20200305('CJBPACrRuNy7' + JSON.stringify(data));
-  return axios.get(`/singerDetailApi/${id}`, {
+  return axios.get('/singerDetailApi', {
     params: {
       '-': 'getSingerSong' + (Math.random() + '').replace('0.', ''),
       g_tk: 5381,
@@ -23,7 +23,8 @@ export default (id) => {
       notice: 0,
       platform: ' yqq.json',
       needNewCode: 0,
-      data
+      data,
+      singermid: id
     }
   })
 }

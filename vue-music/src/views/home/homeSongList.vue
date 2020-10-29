@@ -3,7 +3,7 @@
     <card
       v-for="(item, key) of songList"
       :key="key"
-      @click.native="selectItem(item)"
+      @click.native="selectItem(item),setPlayList([])"
     >
       <img slot="img" v-lazy="item.imgurl" alt />
       <p slot="title">{{ item.dissname }}</p>
@@ -25,10 +25,10 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["setSinger"]),
-    ...mapMutations({ setSinger: "setSinger" }),
+    ...mapMutations(["setSinger", "setPlayList"]),
+    ...mapMutations({ setSinger: "setSinger", setPlayList: "setPlayList" }),
     selectItem(item) {
-      this.$router.push({path:`/home/${item.dissid}`})
+      this.$router.push({ path: `/home/${item.dissid}` });
       this.setSinger(item);
     },
   },
