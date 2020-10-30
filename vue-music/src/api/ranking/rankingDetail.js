@@ -1,9 +1,10 @@
 import axios from 'axios'
 
-export default(id)=>{
-  return axios.get('/rankingDetailApi',{
-    params:{
-      id
+export default (id) => {
+  return axios.get('/rankingDetailApi', {
+    params: {
+      id,
+      '-': Date.now()
     }
   })
 }
