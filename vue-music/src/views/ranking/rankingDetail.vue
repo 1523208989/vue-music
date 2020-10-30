@@ -31,7 +31,7 @@ export default {
       getRankDetail(this.singer.topId).then((res) => {
         res = res.data.data.list;
         if (res.length > 66) this.songList = getSongList(res.slice(0, 66));
-        else this.songlist = getSongList(res);
+        else this.songList = getSongList(res);
       });
     },
   },
