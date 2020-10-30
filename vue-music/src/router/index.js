@@ -2,10 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 const Home = () => import('views/home/home')
 const Singer = () => import('views/singer/singer')
-const Ranking = () => import('views/ranking')
+const Ranking = () => import('views/ranking/ranking')
 const Search = () => import('views/search')
 const SongListDetail = () => import('views/home/songListDetail')
 const SingerDetail = () => import('views/singer/singerDetail/singerDetail')
+const RankingDetail = () => import('views/ranking/rankingDetail')
 
 
 Vue.use(VueRouter)
@@ -41,7 +42,13 @@ const routes = [
   },
   {
     path: '/ranking',
-    component: Ranking
+    component: Ranking,
+    children: [
+      {
+        path: ':id',
+        component: RankingDetail
+      }
+    ]
   }
 ]
 

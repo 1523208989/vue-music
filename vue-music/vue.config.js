@@ -61,6 +61,20 @@ module.exports = {
         pathRewrite: {
           '^/lyricApi': ''
         }
+      },
+      '/rankListApi': {
+        target: 'https://api.qq.jsososo.com/top/category',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/rankListApi': ""
+        }
+      },
+      '/rankingDetailApi':{
+        target:'https://api.qq.jsososo.com/top',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/rankingDetailApi':''
+        }
       }
     }
   },

@@ -79,9 +79,6 @@ export default {
     this._createdA_Z();
   },
 
-  updated() {
-    this._A_ZHeight();
-  },
   computed: {
     getItem() {
       return [...this.singerView.keys()][this.index];
@@ -127,17 +124,20 @@ export default {
     },
     _A_ZHeight() {
       if (!this.topArr.length) {
-        [...this.$refs.singerList.$refs.singerList].reduce((a, b) => {
-          this.topArr.push(a);
-          a += b.clientHeight;
-          return a;
-        }, 0);
+        this.$nextTick((_) => {
+          [...this.$refs.singerList.$refs.singerList].reduce((a, b) => {
+            this.topArr.push(a);
+            a += b.clientHeight;
+            return a;
+          }, 0);
+        });
       }
     },
   },
   watch: {
     singerList() {
       this._initSingerList();
+      this._A_ZHeight();
       this.is = true;
     },
     positionY() {

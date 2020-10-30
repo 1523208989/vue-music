@@ -8,7 +8,7 @@
         src="~assets/image/someImg/back.png"
         alt=""
       />
-      <p class="singer">{{ singerName||title }}</p>
+      <p class="singer">{{ singerName || title }}</p>
       <div class="random" ref="random">
         <img src="~assets/image/someImg/播放.png" alt="" />
         <p>随机播放列表</p>
@@ -17,22 +17,24 @@
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
       <div ref="layer" class="layer"></div>
-      <scroll :data="playList" @scroll="scroll" ref="scroll">
-        <div ref="songList" v-show="playList.length">
+      <scroll :data="playListc" @scroll="scroll" ref="scroll">
+        <div ref="songList" v-show="playListc.length">
           <card
-            v-for="(item, key) of playList"
+            v-for="(item, key) of playListc"
             :key="key"
             @click.native="selectItem(item, key)"
           >
             <img slot="img" v-lazy="item.img_url" alt="" />
             <p slot="title">
+              <span class="rank">{{ rank(item) }}</span>
               {{ item.title }}
+              <span class="rankValue">{{ rankValue(item) }}</span>
               <span class="notPlay"> {{ notPlay(item) }}</span>
             </p>
             <p slot="author">{{ item.name }}--{{ item.album }}</p>
           </card>
         </div>
-        <div class="detailLoad" v-show="!playList.length">
+        <div class="detailLoad" v-show="!playListc.length">
           <loading></loading>
         </div>
       </scroll>
@@ -70,6 +72,7 @@ export default {
     return {
       positionY: 0,
       stateSetPl: 0,
+      playListc: [],
     };
   },
   mounted() {
@@ -86,8 +89,22 @@ export default {
     singerName() {
       return this.singer.singer_name;
     },
-    loadingShow() {
-      return !this.playList.length;
+    rank() {
+      return (item) => {
+        if (item.rank) return `${item.rank} --`;
+        return;
+      };
+    },
+    rankValue() {
+      return (item) => {
+        if (item.rankType) {
+          if (item.rankType === 2) return `⤥${item.rankValue}`;
+          if (item.rankType === 3) return "⤤0";
+          if (item.rankType === 4) return "New";
+          return `⤤${item.rankValue}`;
+        }
+        return;
+      };
     },
     notPlay() {
       return (item) => {
@@ -135,7 +152,6 @@ export default {
     },
     selectItem(item, key) {
       this.playerGo({
-        playList: this.songList,
         song: item,
         index: key,
       });
@@ -150,6 +166,9 @@ export default {
     songList(newV) {
       this._getAudioApi(newV);
       this._getLyricApi(newV);
+    },
+    playList(newV) {
+      this.playListc = newV;
     },
     stateSetPl(newV) {
       newV === 2 && this.setPlayList(this.songList);
@@ -190,7 +209,12 @@ export default {
   width: 100%;
   height: 100vh;
   z-index: 999;
-  .notPlay {
+  .rank {
+    color: @color1;
+    font-size: 14px;
+  }
+  .notPlay,
+  .rankValue {
     color: @color;
     font-size: 11px;
   }

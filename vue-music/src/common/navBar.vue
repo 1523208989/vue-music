@@ -20,7 +20,7 @@ export default {
       menu: [
         { a: "推荐", path: "/home" },
         { a: "歌手", path: "/singer" },
-        { a: "排行", path: "/rangking" },
+        { a: "排行", path: "/ranking" },
         { a: "搜索", path: "/search" },
       ],
     };

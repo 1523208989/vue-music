@@ -1,5 +1,5 @@
 <template>
-  <div v-show="minPlayer || playList.length" style="z-index:9999">
+  <div v-show="minPlayer || playList.length" style="z-index: 9999">
     <div id="error" v-show="error">
       <div>
         <span @click="close">×</span>
@@ -366,7 +366,16 @@ export default {
     down() {
       this.setFullScroll(false);
     },
+
     next() {
+      this.setPlay(true);
+      const len = this.playList.filter((item) => {
+        return item.audioUrl;
+      }).length;
+      if (!len) {
+        this.$refs.audio.load();
+        return;
+      }
       if (!this.songState) return;
       if (this.index === this.playList.length - 1) {
         this.setIndex(-1);
@@ -389,6 +398,14 @@ export default {
       }
     },
     prev() {
+      this.setPlay(true);
+      const len = this.playList.filter((item) => {
+        return item.audioUrl;
+      }).length;
+      if (!len) {
+        this.$refs.audio.load();
+        return;
+      }
       if (!this.songState) return;
       if (this.index === 0) {
         this.setIndex(this.playList.length);
@@ -579,7 +596,7 @@ export default {
       width: 40vw;
       left: 50%;
       top: 45px;
-        white-space: nowrap;
+      white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       transform: translate(-50%, -50%);
