@@ -720,7 +720,7 @@ export default {
 }
 
 #min_player {
-  height: 65px;
+  padding: 3px;
   background-color: rgb(40, 39, 61);
   display: flex;
   justify-content: space-between;
