@@ -69,11 +69,25 @@ module.exports = {
           '^/rankListApi': ""
         }
       },
-      '/rankingDetailApi':{
-        target:'https://api.qq.jsososo.com/top',
-        changeOrigin:true,
-        pathRewrite:{
-          '^/rankingDetailApi':''
+      '/rankingDetailApi': {
+        target: 'https://api.qq.jsososo.com/top',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/rankingDetailApi': ''
+        }
+      },
+      '/hotSearchApi': {
+        target: 'https://api.qq.jsososo.com/search/hot',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/hotSearchApi': ''
+        }
+      },
+      '/searchKeyApi': {
+        target: 'https://api.qq.jsososo.com/search/quick',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/searchKeyApi': ''
         }
       }
     }

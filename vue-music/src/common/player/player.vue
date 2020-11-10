@@ -1,5 +1,5 @@
 <template>
-  <div v-show="minPlayer || playList.length" style="z-index: 9999">
+  <div v-show="minPlayer || playList.length" style="z-index: 9999;width:100%">
     <div id="error" v-show="error">
       <div>
         <span @click="close">×</span>

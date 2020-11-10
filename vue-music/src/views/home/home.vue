@@ -59,7 +59,6 @@ export default {
 
 <style lang='less' scoped>
 #home {
-  margin: 0 auto;
   flex: 1;
   width: 100%;
   display: flex;

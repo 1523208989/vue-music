@@ -31,11 +31,16 @@ export default {
       type: Boolean,
       default: true,
     },
+    content:{
+      type:Array,
+      default(){
+        return []
+      }
+    }
   },
   data() {
     return {
-      pageIndex: 0,
-      content: [],
+      pageIndex: 0,     
     };
   },
   mounted() {

@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 const Home = () => import('views/home/home')
 const Singer = () => import('views/singer/singer')
 const Ranking = () => import('views/ranking/ranking')
-const Search = () => import('views/search')
+const Search = () => import('views/search/search')
 const SongListDetail = () => import('views/home/songListDetail')
 const SingerDetail = () => import('views/singer/singerDetail/singerDetail')
 const RankingDetail = () => import('views/ranking/rankingDetail')
