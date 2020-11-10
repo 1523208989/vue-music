@@ -1,51 +1,118 @@
 <template>
   <div id="searchKey">
+    <loading class="loading" v-show="stateSetPl !== 2 && model"></loading>
     <transition name="singer" appear>
-      <div v-show="singers.length">
-        <div class="singer" v-for="(item, key) of singers" :key="key">
+      <div v-show="singers.length && model">
+        <div
+          class="singer"
+          v-for="(item, key) of singers"
+          :key="key"
+          @click="selectSinger(item)"
+        >
           <div class="singerImg">
-            <img v-lazy="item.pic" alt="" />
+            <img v-lazy="item.singerPic" alt="" />
           </div>
-          <p>{{ item.name }}</p>
+          <p>{{ item.singerName }}</p>
           <p>(歌手)</p>
         </div>
       </div>
     </transition>
-    <transition name="song" appear>
-      <ul v-show="songs.length" class="song">
-        <li v-for="(item, key) of songs" :key="key" @click="selectItem(item)">
-          {{ item.name }}---{{ item.singer }}
-          <i class="iconfont iconshoucang"></i>
-          <span>+</span>
-        </li>
-      </ul></transition
-    >
+    <scroll :data="stateSetPl">
+      <transition name="song" appear>
+        <ul class="song" v-show="stateSetPl === 2 && model">
+          <li
+            v-for="(item, key) of songs"
+            :key="key"
+            @click="selectItem(item, key)"
+          >
+            {{ item.title }}---{{ item.name }}
+            <i class="iconfont iconshoucang"></i>
+            <span>+</span>
+          </li>
+        </ul>
+      </transition>
+    </scroll>
   </div>
 </template>
 
 <script>
 import Loading from "components/loading";
+import Scroll from "components/scroll";
+import getSearchKey from "api/search/searchKey";
+import getSongDetail from "assets/js/getSingerDetail";
+import getAudioApi from "api/player/audio.js";
+import getLyricApi from "api/player/lyric";
+import { mapMutations, mapActions } from "vuex";
+
 export default {
   props: {
-    singers: {
-      type: Array,
-      default() {
-        return [];
-      },
-    },
-    songs: {
-      type: Array,
-      default() {
-        return [];
-      },
+    model: {
+      type: String,
+      default: "",
     },
   },
+  data() {
+    return {
+      singers: [],
+      songs: [],
+      stateSetPl: 0,
+    };
+  },
   methods: {
-    selectItem(item) {
-      
+    ...mapMutations(["setSinger", "setPlayList", "setMinPlayer"]),
+    ...mapMutations({
+      setSinger: "setSinger",
+      setPlayList: "setPlayList",
+      setMinPlayer: "setMinPlayer",
+    }),
+    ...mapActions(["playerGo"]),
+    ...mapActions({ playerGo: "playerGo" }),
+    selectSinger(item) {
+      this.$router.push({ path: `/singer/${item.singerMID}` });
+      this.setSinger(item);
+    },
+    selectItem(item, key) {
+      this.setSinger("来自搜索");
+      this.playerGo({
+        song: item,
+        index: key,
+      });
+    },
+    _getAudioApi(newV) {
+      getAudioApi(newV).then((res) => {
+        res.forEach((item, key) => {
+          newV[key].audioUrl = item.data.req_0.data.midurlinfo[0].purl;
+        });
+        this.stateSetPl++;
+      });
+    },
+    _getLyricApi(newV) {
+      getLyricApi(newV).then((res) => {
+        res.forEach((item, key) => {
+          newV[key].lyric = item.data.data.lyric;
+        });
+        this.stateSetPl++;
+      });
+    },
+  },
+  watch: {
+    model(newV) {
+      this.singers = [];
+      this.stateSetPl = 0;
+      if (newV)
+        getSearchKey(newV).then((res) => {
+          if (res.data.data.zhida.type === 1)
+            this.singers = [res.data.data.zhida.zhida_singer];
+          this.songs = getSongDetail(res.data.data.song.list);
+        });
+    },
+    songs(newV) {
+      this._getAudioApi(newV);
+      this._getLyricApi(newV);
     },
   },
   components: {
+    Scroll,
     Loading,
   },
 };
@@ -53,15 +120,24 @@ export default {
 
 <style lang='less' scoped>
 #searchKey {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   width: 97%;
+  overflow: hidden;
   border-radius: 0 0 6px 6px;
-  background-color: #252525;
+  .loading {
+    position: fixed;
+    width: 100%;
+    top: 40%;
+  }
   .singer {
     padding: 5px;
     display: flex;
     justify-content: start;
     align-items: center;
     border-top: 1px solid #575353a0;
+    background-color: #202020c4;
     p {
       font-size: 13px;
       color: @color1;
@@ -83,9 +159,13 @@ export default {
     }
   }
   .song {
+    background-color: #202020c4;
     color: @color1;
     li {
-      padding-left: 17px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 60px 0 17px;
       position: relative;
       line-height: 38px;
       font-size: 13px;
@@ -109,7 +189,7 @@ export default {
   }
   .singer-enter-active,
   .singer-leave-active {
-    transition: all 1s;
+    transition: all 2s;
   }
   .song-enter,
   .song-leave-to {

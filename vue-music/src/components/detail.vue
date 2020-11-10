@@ -55,7 +55,7 @@ export default {
   props: {
     img: {
       type: String,
-      default: "",
+      default: '',
     },
     songList: {
       type: Array,

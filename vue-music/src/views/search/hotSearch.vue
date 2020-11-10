@@ -1,12 +1,18 @@
 <template>
-  <div id="hotSearch">
-    <p class="hotP">热门搜索</p>
-    <ul>
-      <li v-for="(item, key) of hotList" :key="key" @click="selectItem(item.k)">
-        {{ item.k }}
-      </li>
-    </ul>
-  </div>
+  <transition name="hot" appear>
+    <div id="hotSearch">
+      <p class="hotP">热门搜索</p>
+      <ul>
+        <li
+          v-for="(item, key) of hotList"
+          :key="key"
+          @click="selectItem(item.k)"
+        >
+          {{ item.k }}
+        </li>
+      </ul>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -26,7 +32,6 @@ export default {
         res = res.data.data;
         if (res.length > 10) this.hotList = res.slice(0, 10);
         else this.hotList = res;
-        console.log(this.hotList);
       });
     },
     selectItem(item) {
@@ -40,8 +45,8 @@ export default {
 #hotSearch {
   width: 100%;
   padding: 10px;
-  .hotP{
-    margin:0 10px 10px;
+  .hotP {
+    margin: 0 10px 10px;
     font-size: 15px;
     color: @color;
   }
@@ -58,5 +63,14 @@ export default {
       line-height: 30px;
     }
   }
-}
+
+}  .hot-enter,
+  .hot-leave-to {
+    opacity: 0;
+    transform: translate3d(100%,0,0);
+  }
+  .hot-enter-active,
+  .hot-leave-active {
+    transition: all 1s;
+  }
 </style>

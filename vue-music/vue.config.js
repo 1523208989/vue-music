@@ -84,7 +84,7 @@ module.exports = {
         }
       },
       '/searchKeyApi': {
-        target: 'https://api.qq.jsososo.com/search/quick',
+        target: 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
         changeOrigin: true,
         pathRewrite: {
           '^/searchKeyApi': ''

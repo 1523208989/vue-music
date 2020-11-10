@@ -63,7 +63,6 @@ export default {
 
 <style lang='less' scoped>
 #ranking {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
