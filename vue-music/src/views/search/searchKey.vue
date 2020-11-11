@@ -1,8 +1,8 @@
 <template>
   <div id="searchKey">
-    <loading class="loading" v-show="stateSetPl !== 2 && model"></loading>
+    <loading class="loading" v-show="!songs.length && model"></loading>
     <transition name="singer" appear>
-      <div v-show="singers.length && model">
+      <div v-show="singers.length">
         <div
           class="singer"
           v-for="(item, key) of singers"
@@ -17,27 +17,30 @@
         </div>
       </div>
     </transition>
-    <scroll :data="stateSetPl">
+    <pullingUp ref="pu" :data="songs" :isPull="isPull" @pullingUp="pullingUp">
       <transition name="song" appear>
-        <ul class="song" v-show="stateSetPl === 2 && model">
+        <ul class="song" v-show="songs.length">
           <li
             v-for="(item, key) of songs"
             :key="key"
             @click="selectItem(item, key)"
           >
             {{ item.title }}---{{ item.name }}
-            <i class="iconfont iconshoucang"></i>
-            <span>+</span>
+            <span class="span" v-show="!item.audioUrl">(无版权)</span>
+            <i v-show="item.audioUrl" class="iconfont iconshoucang"></i>
+            <span v-show="item.audioUrl">+</span>
           </li>
+          <li class="li" v-show="isPull">加载数据中...</li>
+          <li class="li" v-show="!isPull">你已经到达最底部了！</li>
         </ul>
       </transition>
-    </scroll>
+    </pullingUp>
   </div>
 </template>
 
 <script>
 import Loading from "components/loading";
-import Scroll from "components/scroll";
+import pullingUp from "components/pullingUp";
 import getSearchKey from "api/search/searchKey";
 import getSongDetail from "assets/js/getSingerDetail";
 import getAudioApi from "api/player/audio.js";
@@ -55,7 +58,9 @@ export default {
     return {
       singers: [],
       songs: [],
-      stateSetPl: 0,
+      page: 1,
+      isPull: false,
+      timer: null,
     };
   },
   methods: {
@@ -67,6 +72,20 @@ export default {
     }),
     ...mapActions(["playerGo"]),
     ...mapActions({ playerGo: "playerGo" }),
+    pullingUp() {
+      if (this.page < 100) {
+        this.page++;
+        this.isPull = true;
+        getSearchKey(this.model, this.page).then(async (res) => {
+          const keyword = res.data.data.keyword;
+          res = getSongDetail(res.data.data.song.list);
+          await this._getAudioApi(res);
+          await this._getLyricApi(res);
+          if (keyword === this.model) this.songs.push(...res);
+          this.isPull = false;
+        });
+      }
+    },
     selectSinger(item) {
       this.$router.push({ path: `/singer/${item.singerMID}` });
       this.setSinger(item);
@@ -78,42 +97,48 @@ export default {
         index: key,
       });
     },
-    _getAudioApi(newV) {
-      getAudioApi(newV).then((res) => {
+    async _getAudioApi(newV) {
+      await getAudioApi(newV).then((res) => {
         res.forEach((item, key) => {
           newV[key].audioUrl = item.data.req_0.data.midurlinfo[0].purl;
         });
-        this.stateSetPl++;
       });
     },
-    _getLyricApi(newV) {
-      getLyricApi(newV).then((res) => {
+    async _getLyricApi(newV) {
+      await getLyricApi(newV).then((res) => {
         res.forEach((item, key) => {
           newV[key].lyric = item.data.data.lyric;
         });
-        this.stateSetPl++;
+      });
+    },
+    _getSearchKey(newV) {
+      getSearchKey(newV).then(async (res) => {
+        if (res.data.data.zhida.type === 1)
+          this.singers = [res.data.data.zhida.zhida_singer];
+        res = getSongDetail(res.data.data.song.list);
+        await this._getAudioApi(res);
+        await this._getLyricApi(res);
+        if (newV === this.model) this.songs = res;
       });
     },
   },
   watch: {
     model(newV) {
+      this.page = 1;
       this.singers = [];
-      this.stateSetPl = 0;
-      if (newV)
-        getSearchKey(newV).then((res) => {
-          if (res.data.data.zhida.type === 1)
-            this.singers = [res.data.data.zhida.zhida_singer];
-          this.songs = getSongDetail(res.data.data.song.list);
-        });
-    },
-    songs(newV) {
-      this._getAudioApi(newV);
-      this._getLyricApi(newV);
+      this.songs = [];
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        if (newV) this._getSearchKey(newV);
+      }, 1000);
     },
   },
   components: {
-    Scroll,
     Loading,
+    pullingUp,
   },
 };
 </script>
@@ -158,9 +183,16 @@ export default {
       }
     }
   }
+
   .song {
     background-color: #202020c4;
     color: @color1;
+    .li {
+      margin: 0 auto;
+      padding: 0;
+      color: @color;
+      text-align: center;
+    }
     li {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -171,17 +203,24 @@ export default {
       font-size: 13px;
       list-style-type: none;
       border-top: 1px solid #575353a0;
+
       span,
+      .span,
       i {
         position: absolute;
         right: 12px;
         font-size: 16px;
+      }
+      .span {
+        color: @color;
+        font-size: 11px;
       }
       i {
         right: 38px;
       }
     }
   }
+
   .singer-enter,
   .singer-leave-to {
     transform: translate3d(100%, 0, 0);

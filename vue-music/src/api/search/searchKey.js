@@ -1,5 +1,5 @@
 import axios from 'axios'
-export default (w) => {
+export default (w,p=1) => {
 
   return axios.get('/searchKeyApi', {
     params: {
@@ -14,7 +14,7 @@ export default (w) => {
       catZhida: 1,
       lossless: 0,
       flag_qc: 0,
-      p: 1,
+      p,
       n: 20,
       w,
       g_tk_new_20200303: 5381,
