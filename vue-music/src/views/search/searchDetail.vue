@@ -1,34 +1,28 @@
 <template>
-  <detail 
-    :img="singerImg"
-    :songList="songList"
-  ></detail>
+  <detail :img="singer.singerPic" :songList="songList"></detail>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import Detail from "components/detail";
 import singerDetailApi from "api/singer/singerDetail";
 import getSongList from "assets/js/getSingerDetail";
-import Detail from "components/detail";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
       songList: [],
     };
   },
-  computed: {
-    ...mapState(["singer"]),
-    ...mapState({ singer: "singer"}),
-    singerImg() {
-      return this.singer.singer_pic;
-    },
-  },
   created() {
     this._getDetailApi();
   },
+  computed: {
+    ...mapState(["singer"]),
+    ...mapState({ singer: "singer" }),
+  },
   methods: {
     _getDetailApi() {
-      singerDetailApi(this.singer.singer_mid).then((res) => {
+      singerDetailApi(this.singer.singerMID).then((res) => {
         this.songList = getSongList(res.data.data.list);
       });
     },

@@ -9,7 +9,7 @@
         alt=""
       />
       <p class="singer">{{ singerName || title }}</p>
-      <div class="random" ref="random">
+      <div class="random" ref="random" @click="randomPlay">
         <img src="~assets/image/someImg/播放.png" alt="" />
         <p>随机播放列表</p>
       </div>
@@ -17,10 +17,10 @@
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
       <div ref="layer" class="layer"></div>
-      <scroll :data="playListc" @scroll="scroll" ref="scroll">
-        <div ref="songList" v-show="playListc.length">
+      <scroll :data="playList" @scroll="scroll" ref="scroll">
+        <div ref="songList" v-show="audioList.length">
           <card
-            v-for="(item, key) of playListc"
+            v-for="(item, key) of audioList"
             :key="key"
             @click.native="selectItem(item, key)"
           >
@@ -34,7 +34,7 @@
             <p slot="author">{{ item.name }}--{{ item.album }}</p>
           </card>
         </div>
-        <div class="detailLoad" v-show="!playListc.length">
+        <div class="detailLoad" v-show="!audioList.length">
           <loading></loading>
         </div>
       </scroll>
@@ -55,7 +55,7 @@ export default {
   props: {
     img: {
       type: String,
-      default: '',
+      default: "",
     },
     songList: {
       type: Array,
@@ -70,9 +70,8 @@ export default {
   },
   data() {
     return {
+      audioList: [],
       positionY: 0,
-      stateSetPl: 0,
-      playListc: [],
     };
   },
   mounted() {
@@ -87,7 +86,8 @@ export default {
       index: "index",
     }),
     singerName() {
-      return this.singer.singer_name;
+      if (this.singer.singer_name) return this.singer.singer_name;
+      else return this.singer.singerName;
     },
     rank() {
       return (item) => {
@@ -125,23 +125,22 @@ export default {
     }),
     ...mapActions(["playerGo"]),
     ...mapActions({ playerGo: "playerGo" }),
-    _getAudioApi(newV) {
-      getAudioApi(newV).then((res) => {
+    async _getAudioApi(newV) {
+      await getAudioApi(newV).then((res) => {
         res.forEach((item, key) => {
           newV[key].audioUrl = item.data.req_0.data.midurlinfo[0].purl;
         });
-        this.stateSetPl++;
       });
     },
-    _getLyricApi(newV) {
-      getLyricApi(newV).then((res) => {
+    async _getLyricApi(newV) {
+      await getLyricApi(newV).then((res) => {
         res.forEach((item, key) => {
           newV[key].lyric = item.data.data.lyric;
         });
-        this.stateSetPl++;
       });
     },
     back() {
+      this.setPlayList([]);
       this.$router.go(-1);
     },
     scroll(item) {
@@ -156,6 +155,21 @@ export default {
         index: key,
       });
     },
+    randomPlay() {
+      const len = this.audioList.length;
+      if (len) {
+        const songs = this.audioList.filter((item) => {
+          return item.audioUrl;
+        });
+        if (songs.length) {
+          const key = Math.floor(Math.random() * songs.length);
+          this.playerGo({
+            song: songs[key],
+            index: this.audioList.indexOf(songs[key]),
+          });
+        }
+      }
+    },
   },
   components: {
     Scroll,
@@ -163,15 +177,10 @@ export default {
     Loading,
   },
   watch: {
-    songList(newV) {
-      this._getAudioApi(newV);
-      this._getLyricApi(newV);
-    },
-    playList(newV) {
-      this.playListc = newV;
-    },
-    stateSetPl(newV) {
-      newV === 2 && this.setPlayList(this.songList);
+    async songList(newV) {
+      await Promise.all([this._getAudioApi(newV), this._getLyricApi(newV)]);
+      this.setPlayList(this.songList);
+      this.audioList = newV;
     },
     positionY(newV) {
       if (-newV >= 0 && -newV <= 235) {

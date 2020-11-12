@@ -37,17 +37,16 @@ export default {
   },
   mounted() {
     this.$refs.scroll.$el.style.height = "auto";
-    this.lines = this.lyric.lines;
-    this.$emit("lyc", this.lines[0].txt);
   },
   computed: {
     ...mapState(["song"]),
     ...mapState({ song: "song" }),
   },
   methods: {
-    hanlder({ lineNum, txt }) {},
     _initLyric() {
       this.lyric = new Lyric(this.song.lyric, this.hanlder);
+      this.lines = this.lyric.lines;
+      this.$emit("lyc", this.lines[0].txt);
     },
   },
   components: {

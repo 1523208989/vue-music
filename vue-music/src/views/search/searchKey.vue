@@ -35,6 +35,7 @@
         </ul>
       </transition>
     </pullingUp>
+   
   </div>
 </template>
 
@@ -64,30 +65,25 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setSinger", "setPlayList", "setMinPlayer"]),
+    ...mapMutations(["setSinger"]),
     ...mapMutations({
       setSinger: "setSinger",
-      setPlayList: "setPlayList",
-      setMinPlayer: "setMinPlayer",
     }),
     ...mapActions(["playerGo"]),
     ...mapActions({ playerGo: "playerGo" }),
     pullingUp() {
-      if (this.page < 100) {
-        this.page++;
-        this.isPull = true;
-        getSearchKey(this.model, this.page).then(async (res) => {
-          const keyword = res.data.data.keyword;
-          res = getSongDetail(res.data.data.song.list);
-          await this._getAudioApi(res);
-          await this._getLyricApi(res);
-          if (keyword === this.model) this.songs.push(...res);
-          this.isPull = false;
-        });
-      }
+      this.page++;
+      this.isPull = true;
+      getSearchKey(this.model, this.page).then(async (res) => {
+        const keyword = res.data.data.keyword;
+        res = getSongDetail(res.data.data.song.list);
+        await Promise.all([this._getAudioApi(res), this._getLyricApi(res)]);
+        if (keyword === this.model) this.songs.push(...res);
+        this.isPull = false;
+      });
     },
     selectSinger(item) {
-      this.$router.push({ path: `/singer/${item.singerMID}` });
+      this.$router.push({ path: `/search/${item.singerMID}` });
       this.setSinger(item);
     },
     selectItem(item, key) {
@@ -116,8 +112,7 @@ export default {
         if (res.data.data.zhida.type === 1)
           this.singers = [res.data.data.zhida.zhida_singer];
         res = getSongDetail(res.data.data.song.list);
-        await this._getAudioApi(res);
-        await this._getLyricApi(res);
+        await Promise.all([this._getAudioApi(res), this._getLyricApi(res)]);
         if (newV === this.model) this.songs = res;
       });
     },

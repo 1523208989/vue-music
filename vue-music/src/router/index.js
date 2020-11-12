@@ -7,6 +7,7 @@ const Search = () => import('views/search/search')
 const SongListDetail = () => import('views/home/songListDetail')
 const SingerDetail = () => import('views/singer/singerDetail/singerDetail')
 const RankingDetail = () => import('views/ranking/rankingDetail')
+const SearchDetail=()=>import ('views/search/searchDetail')
 
 
 Vue.use(VueRouter)
@@ -38,7 +39,13 @@ const routes = [
   },
   {
     path: '/search',
-    component: Search
+    component: Search,
+    children: [
+      {
+        path: ':id',
+        component: SearchDetail
+      }
+    ]
   },
   {
     path: '/ranking',

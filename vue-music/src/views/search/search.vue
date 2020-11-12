@@ -3,6 +3,7 @@
     <searchBox ref="searchBox" @getModel="getModel"></searchBox>
     <hotSearch v-show="!model"></hotSearch>
     <searchKey ref="searchKey" :model="model"></searchKey>
+    <router-view></router-view>
   </div>
 </template>
 
