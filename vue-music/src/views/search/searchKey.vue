@@ -31,11 +31,9 @@
             <span v-show="item.audioUrl">+</span>
           </li>
           <li class="li" v-show="isPull">加载数据中...</li>
-          <li class="li" v-show="!isPull">你已经到达最底部了！</li>
         </ul>
       </transition>
     </pullingUp>
-   
   </div>
 </template>
 
@@ -47,6 +45,8 @@ import getSongDetail from "assets/js/getSingerDetail";
 import getAudioApi from "api/player/audio.js";
 import getLyricApi from "api/player/lyric";
 import { mapMutations, mapActions } from "vuex";
+import saveSearch from "assets/js/saveHistory";
+import storage from "good-storage";
 
 export default {
   props: {
@@ -65,12 +65,8 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setSinger"]),
-    ...mapMutations({
-      setSinger: "setSinger",
-    }),
+    ...mapMutations(["setSinger", "setHIS_search"]),
     ...mapActions(["playerGo"]),
-    ...mapActions({ playerGo: "playerGo" }),
     pullingUp() {
       this.page++;
       this.isPull = true;
@@ -83,15 +79,18 @@ export default {
       });
     },
     selectSinger(item) {
+      saveSearch("search", this.model, 6);
       this.$router.push({ path: `/search/${item.singerMID}` });
       this.setSinger(item);
     },
     selectItem(item, key) {
+      saveSearch("search", this.model, 6);
       this.setSinger("来自搜索");
       this.playerGo({
         song: item,
         index: key,
       });
+      this.setHIS_search(storage.get("search", []));
     },
     async _getAudioApi(newV) {
       await getAudioApi(newV).then((res) => {

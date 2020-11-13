@@ -40,7 +40,6 @@ export default {
   },
   methods: {
     ...mapMutations(['setSinger']),
-    ...mapMutations({setSinger:'setSinger'}),
     _getRankList() {
       getRankList().then((res) => {
         res.data.data.forEach((item) => {

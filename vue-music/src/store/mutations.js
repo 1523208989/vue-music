@@ -18,12 +18,15 @@ export default {
     state.mode = item
   },
   setPlay(state, item) {
-    if(state.play !== item)state.play = item
+    if (state.play !== item) state.play = item
   },
   setError(state, item) {
     if (state.error !== item) state.error = item
   },
-  setMinPlayer(state,item){
+  setMinPlayer(state, item) {
     if (state.minPlayer !== item) state.minPlayer = item
+  },
+  setHIS_search(state, item) {
+    state.HIS_search = item
   }
 }

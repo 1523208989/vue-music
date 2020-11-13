@@ -41,7 +41,6 @@ export default {
       this.setSinger(item);
     },
     ...mapMutations(["setSinger"]),
-    ...mapMutations({ setSinger: "setSinger" }),
   },
   components: {
     Card,

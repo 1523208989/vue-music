@@ -18,7 +18,6 @@ export default {
   },
   computed: {
     ...mapState(["singer"]),
-    ...mapState({ singer: "singer" }),
   },
   methods: {
     _getDetailApi() {

@@ -152,17 +152,6 @@ export default {
       "error",
       "mode",
     ]),
-    ...mapState({
-      fullScroll: "fullScroll",
-      playList: "playList",
-      song: "song",
-      play: "play",
-      error: "error",
-      index: "index",
-      minPlayer: "minPlayer",
-      mode: "mode",
-      lycState: true,
-    }),
     playClass() {
       return this.play ? "iconicon_bofang" : "iconbofang";
     },
@@ -198,14 +187,6 @@ export default {
       "setIndex",
       "setMode",
     ]),
-    ...mapMutations({
-      setFullScroll: "setFullScroll",
-      setPlay: "setPlay",
-      setError: "setError",
-      setIndex: "setIndex",
-      setSong: "setSong",
-      setMode: "setMode",
-    }),
     timeUpdate(e) {
       let m = (this.$refs.audio.duration / 60) | 0;
       let s = this._pad(this.$refs.audio.duration % 60 | 0);

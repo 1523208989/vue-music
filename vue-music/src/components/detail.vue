@@ -79,12 +79,6 @@ export default {
   },
   computed: {
     ...mapState(["singer", "playList", "index", "fullScroll"]),
-    ...mapState({
-      singer: "singer",
-      playList: "playList",
-      fullScroll: "fullScroll",
-      index: "index",
-    }),
     singerName() {
       if (this.singer.singer_name) return this.singer.singer_name;
       else return this.singer.singerName;
@@ -119,12 +113,7 @@ export default {
   },
   methods: {
     ...mapMutations(["setPlayList", "setMinPlayer"]),
-    ...mapMutations({
-      setPlayList: "setPlayList",
-      setMinPlayer: "setMinPlayer",
-    }),
     ...mapActions(["playerGo"]),
-    ...mapActions({ playerGo: "playerGo" }),
     async _getAudioApi(newV) {
       await getAudioApi(newV).then((res) => {
         res.forEach((item, key) => {

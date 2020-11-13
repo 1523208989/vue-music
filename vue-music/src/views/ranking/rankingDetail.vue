@@ -21,7 +21,6 @@ export default {
   },
   computed: {
     ...mapState(["singer"]),
-    ...mapState({ singer: "singer" }),
   },
   created() {
     this._getRankDetail();

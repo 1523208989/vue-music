@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-wrapper"  ref="scroll">
+  <div class="scroll-wrapper" ref="scroll">
     <slot></slot>
   </div>
 </template>
@@ -27,7 +27,6 @@ export default {
   },
   computed: {
     ...mapState(["index", "fullScroll"]),
-    ...mapState({ index: "index", fullScroll: "fullScroll" }),
     marginBT() {
       if (this.index !== -1 && !this.fullScroll) return true;
       return false;
@@ -38,7 +37,7 @@ export default {
       this.scroll = new BScroll(this.$refs.scroll, {
         probeType: 3,
         click: true,
-        stopPropagation:true
+        stopPropagation: true,
       });
       this.scroll.on("scroll", (position) => {
         this.$emit("scroll", position.y);
@@ -49,7 +48,7 @@ export default {
     },
   },
   watch: {
-    data(newV) {
+    data() {
       this.$nextTick(() => {
         this._refresh();
       });
@@ -57,11 +56,11 @@ export default {
     imgLoad() {
       this._refresh();
     },
-    marginBT(){
-           this.$nextTick(() => {
+    marginBT() {
+      this.$nextTick(() => {
         this._refresh();
       });
-    }
+    },
   },
 };
 </script>

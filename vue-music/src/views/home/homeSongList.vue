@@ -26,7 +26,6 @@ export default {
   },
   methods: {
     ...mapMutations(["setSinger"]),
-    ...mapMutations({ setSinger: "setSinger" }),
     selectItem(item) {
       this.$router.push({ path: `/home/${item.dissid}` });
       this.setSinger(item);

@@ -21,7 +21,6 @@ export default {
   },
   computed: {
     ...mapState(["fullScroll"]),
-    ...mapState({ fullScroll: "fullScroll" }),
   },
   mounted() {
     this.initPU();

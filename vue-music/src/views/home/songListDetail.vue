@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState } from "vuex";
 import Detail from "components/detail";
 import songListDetailApi from "api/home/songListDetail";
 import getSongList from "assets/js/getSongListDetail";
@@ -23,7 +23,6 @@ export default {
   },
   computed: {
     ...mapState(["singer"]),
-    ...mapState({ singer: "singer" }),
   },
   methods: {
     _getSongList() {

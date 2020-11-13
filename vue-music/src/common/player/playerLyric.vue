@@ -37,16 +37,15 @@ export default {
   },
   mounted() {
     this.$refs.scroll.$el.style.height = "auto";
+    this.lines = this.lyric.lines;
   },
   computed: {
     ...mapState(["song"]),
-    ...mapState({ song: "song" }),
   },
   methods: {
     _initLyric() {
-      this.lyric = new Lyric(this.song.lyric, this.hanlder);
-      this.lines = this.lyric.lines;
-      this.$emit("lyc", this.lines[0].txt);
+      this.lyric = new Lyric(this.song.lyric);
+      this.$emit("lyc", this.lyric.lines[0].txt);
     },
   },
   components: {
@@ -54,7 +53,6 @@ export default {
   },
   watch: {
     song() {
-      this.lyric.stop();
       this.index = 0;
       this._initLyric();
       this.lines = this.lyric.lines;

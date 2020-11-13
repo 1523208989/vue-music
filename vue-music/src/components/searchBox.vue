@@ -40,6 +40,7 @@ export default {
 <style lang='less' scoped>
 .searchBox {
   width: 97%;
+  margin-top: 10px ;
   padding: 10px 2px;
   border-radius: 6px 6px 0 0;
   display: flex;
