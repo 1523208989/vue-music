@@ -27,7 +27,12 @@
           >
             {{ item.title }}---{{ item.name }}
             <span class="span" v-show="!item.audioUrl">(无版权)</span>
-            <i v-show="item.audioUrl" class="iconfont iconshoucang"></i>
+            <i
+              v-show="item.audioUrl"
+              class="iconfont iconshoucang"
+              :class="{ red: colorRed(item) }"
+              @click.stop="setCollect(item)"
+            ></i>
             <span v-show="item.audioUrl">+</span>
           </li>
           <li class="li" v-show="isPull">加载数据中...</li>
@@ -44,7 +49,7 @@ import getSearchKey from "api/search/searchKey";
 import getSongDetail from "assets/js/getSingerDetail";
 import getAudioApi from "api/player/audio.js";
 import getLyricApi from "api/player/lyric";
-import { mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import saveSearch from "assets/js/saveHistory";
 import storage from "good-storage";
 
@@ -64,9 +69,37 @@ export default {
       timer: null,
     };
   },
+  computed: {
+    ...mapState(["MINE_collect"]),
+    colorRed() {
+      return (song) => {
+        if (
+          this.MINE_collect.some((item) => {
+            return item.mid === song.mid;
+          })
+        )
+          return true;
+        else return false;
+      };
+    },
+  },
   methods: {
-    ...mapMutations(["setSinger", "setHIS_search"]),
+    ...mapMutations(["setSinger", "setHIS_search",'setMINE_collect']),
     ...mapActions(["playerGo"]),
+        setCollect(song) {
+      const collect = this.MINE_collect;
+      let key = -1;
+      if (
+        collect.some((item, index) => {
+          if (item.mid === song.mid) key = index;
+          return item.mid === song.mid;
+        })
+      ) {
+        if (key > -1) collect.splice(key, 1);
+      } else collect.unshift(song);
+      storage.set("collect", collect);
+      this.setMINE_collect(collect);
+    },
     pullingUp() {
       this.page++;
       this.isPull = true;
@@ -84,7 +117,7 @@ export default {
       this.setSinger(item);
     },
     selectItem(item, key) {
-      saveSearch("search", this.model, 6);
+      saveSearch("search", this.model, (item) => item === this.model, 6);
       this.setSinger("来自搜索");
       this.playerGo({
         song: item,
@@ -197,7 +230,6 @@ export default {
       font-size: 13px;
       list-style-type: none;
       border-top: 1px solid #575353a0;
-
       span,
       .span,
       i {
@@ -211,6 +243,9 @@ export default {
       }
       i {
         right: 38px;
+        &.red {
+          color: rgba(255, 187, 0, 0.6);
+        }
       }
     }
   }

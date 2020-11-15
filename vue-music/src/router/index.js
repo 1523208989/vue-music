@@ -56,7 +56,7 @@ const routes = [
         component: RankingDetail
       }
     ]
-  }
+  },
 ]
 
 export default new VueRouter({

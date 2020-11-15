@@ -28,5 +28,11 @@ export default {
   },
   setHIS_search(state, item) {
     state.HIS_search = item
+  },
+  setMINE_collect(state, item) {
+    state.MINE_collect=item
+  },
+  setMINE_history(state, item) {
+    state.MINE_history=item
   }
 }

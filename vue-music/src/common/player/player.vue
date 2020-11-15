@@ -1,5 +1,5 @@
 <template>
-  <div v-show="minPlayer || playList.length" style="z-index: 9999;width:100%">
+  <div v-show="minPlayer || playList.length" style="z-index: 9999; width: 100%">
     <div id="error" v-show="error">
       <div>
         <span @click="close">×</span>
@@ -82,7 +82,11 @@
             :class="prevClass"
             @click="next"
           ></i>
-          <i class="iconfont iconshoucang"></i>
+          <i
+            class="iconfont iconshoucang"
+            :class="{ red }"
+            @click="setCollect"
+          ></i>
         </div>
       </div>
     </transition>
@@ -102,7 +106,7 @@
         >
           <i :class="`iconfont ${playClass}`"></i
         ></prog-circle>
-        <i class="iconfont icongedan i"></i>
+        <i class="iconfont icongedan i" @click.stop="mineShow = !mineShow"></i>
       </div>
     </transition>
     <audio
@@ -113,6 +117,9 @@
       @error="songError"
       @timeupdate="timeUpdate"
     ></audio>
+    <transition name="mine" appear>
+      <mine v-show="mineShow"></mine>
+    </transition>
   </div>
 </template>
 <script>
@@ -120,6 +127,9 @@ import { mapState, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 import ProgCircle from "./progressCircle";
 import Lyric from "./playerLyric";
+import Mine from "./mine";
+import storage from "good-storage";
+import saveHistory from "assets/js/saveHistory";
 export default {
   data() {
     return {
@@ -136,6 +146,7 @@ export default {
       songCut: false,
       lyricShow: false,
       lyc: "",
+      mineShow: false,
     };
   },
   mounted() {
@@ -151,7 +162,17 @@ export default {
       "play",
       "error",
       "mode",
+      "MINE_collect",
     ]),
+    red() {
+      if (
+        this.MINE_collect.some((item) => {
+          return item.mid === this.song.mid;
+        })
+      )
+        return true;
+      else return false;
+    },
     playClass() {
       return this.play ? "iconicon_bofang" : "iconbofang";
     },
@@ -186,7 +207,23 @@ export default {
       "setError",
       "setIndex",
       "setMode",
+      "setMINE_collect",
+      "setMINE_history",
     ]),
+    setCollect() {
+      const collect = this.MINE_collect;
+      let key = -1;
+      if (
+        collect.some((item, index) => {
+          if (item.mid === this.song.mid) key = index;
+          return item.mid === this.song.mid;
+        })
+      ) {
+        if (key > -1) collect.splice(key, 1);
+      } else collect.unshift(this.song);
+      storage.set("collect", collect);
+      this.setMINE_collect(collect);
+    },
     timeUpdate(e) {
       let m = (this.$refs.audio.duration / 60) | 0;
       let s = this._pad(this.$refs.audio.duration % 60 | 0);
@@ -347,7 +384,6 @@ export default {
     down() {
       this.setFullScroll(false);
     },
-
     next() {
       this.setPlay(true);
       const len = this.playList.filter((item) => {
@@ -468,8 +504,15 @@ export default {
     },
   },
   watch: {
-    song() {
+    song(newV) {
       this.setPlay(true);
+      const arr = saveHistory(
+        "history",
+        newV,
+        (item) => item.mid === newV.mid,
+        30
+      );
+      this.setMINE_history(arr);
     },
     play(newV) {
       this.$nextTick(() => {
@@ -489,6 +532,7 @@ export default {
   components: {
     ProgCircle,
     Lyric,
+    Mine,
   },
 };
 </script>
@@ -681,6 +725,7 @@ export default {
     justify-content: space-around;
     align-items: center;
     padding: 0 20px;
+
     i {
       font-size: 44px;
       &:first-child {
@@ -692,6 +737,9 @@ export default {
       &:last-child {
         font-size: 36px;
         color: @color1;
+        &.red {
+          color: rgba(255, 187, 0, 0.6);
+        }
       }
       &.stop {
         color: @color1;
@@ -701,7 +749,7 @@ export default {
 }
 
 #min_player {
-  padding: 3px;
+  height: 65px;
   background-color: rgb(40, 39, 61);
   display: flex;
   justify-content: space-between;
@@ -787,5 +835,14 @@ export default {
 .min_player-leave-to {
   opacity: 0;
   transform: translate3d(0, 50px, 0);
+}
+.mine-enter-active,
+.mine-leave-active {
+  transition: all 0.5s;
+}
+.mine-enter,
+.mine-leave-to {
+  opacity: 0;
+  transform: translate3d(0, 100vh, 0);
 }
 </style>

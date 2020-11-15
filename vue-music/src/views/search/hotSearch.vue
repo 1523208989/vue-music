@@ -12,8 +12,7 @@
         </li>
       </ul>
       <p v-show="HIS_search.length" class="hotP">
-        历史搜素<i
-         
+        历史搜素<i         
           class="iconfont iconshanchu clear"
           @click="isShow = true"
         ></i>
@@ -141,7 +140,7 @@ export default {
       list-style-type: none;
       line-height: 30px;
       span {
-        padding-left: 10px;
+        margin-left: 10px;
       }
     }
   }
