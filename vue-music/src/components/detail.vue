@@ -17,7 +17,7 @@
         <img class="singer_img" ref="img" :src="img" alt="" />
       </div>
       <div ref="layer" class="layer"></div>
-      <scroll :data="playList" @scroll="scroll" ref="scroll">
+      <scroll :data="audioList" @scroll="scroll" ref="scroll">
         <div ref="songList" v-show="audioList.length">
           <card
             v-for="(item, key) of audioList"
@@ -129,7 +129,6 @@ export default {
       });
     },
     back() {
-      this.setPlayList([]);
       this.$router.go(-1);
     },
     scroll(item) {
@@ -139,6 +138,7 @@ export default {
       this.$refs.scroll.$el.style.overflow = "visible";
     },
     selectItem(item, key) {
+      this.setPlayList(this.songList);
       this.playerGo({
         song: item,
         index: key,
@@ -168,7 +168,7 @@ export default {
   watch: {
     async songList(newV) {
       await Promise.all([this._getAudioApi(newV), this._getLyricApi(newV)]);
-      this.setPlayList(this.songList);
+
       this.audioList = newV;
     },
     positionY(newV) {

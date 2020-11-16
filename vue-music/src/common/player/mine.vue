@@ -7,9 +7,13 @@
         <p :class="{ navB: navB === 3 }" @click="navB = 3">最近播放</p>
       </div>
       <p v-show="songList.length" class="clear">
-        按下就清空，三思三思<i class="iconfont iconshanchu"></i>
+        按下就清空，三思三思<i
+          class="iconfont iconshanchu"
+          @click="clearAll"
+        ></i>
       </p>
-      <p v-show="!songList.length" class="clear">暂无歌曲</p>
+      <p v-show="navB === 1" class="clear" @click="search">点击添加歌曲>></p>
+      <p v-show="navB !== 1 && !songList.length" class="clear">暂无歌曲</p>
       <scroll :data="songList" ref="scroll">
         <ul class="song" v-show="songList.length">
           <li
@@ -21,15 +25,27 @@
             <i
               v-show="navB === 2"
               class="iconfont iconshanchu"
+              :class="{ DH: navB === 3 }"
               @click.stop="setCollect(item)"
+            ></i>
+            <i
+              v-show="navB === 3"
+              class="iconfont iconshanchu DH"
+              @click.stop="deleteSong(key)"
             ></i>
             <i
               v-show="navB !== 2"
               class="iconfont iconshoucang"
-              :class="{ red: colorRed(item) }"
+              :class="{ red: colorRed(item, MINE_collect) }"
               @click.stop="setCollect(item)"
             ></i>
-            <span v-show="navB !== 1">+</span>
+            <span
+              v-show="navB !== 1"
+              :class="{ red: colorRed(item, MINE_songList) }"
+              @click.stop="_setSongList(item)"
+              >+</span
+            >
+            <span v-show="navB === 1" @click.stop="deleteSong(key)"> - </span>
           </li>
         </ul>
       </scroll>
@@ -41,6 +57,7 @@
 import Scroll from "components/scroll";
 import storage from "good-storage";
 import { mapState, mapMutations, mapActions } from "vuex";
+import saveSearch from "assets/js/saveHistory";
 export default {
   data() {
     return {
@@ -49,16 +66,22 @@ export default {
     };
   },
   computed: {
-    ...mapState(["MINE_collect", "MINE_songList", "MINE_history"]),
+    ...mapState([
+      "song",
+      "singer",
+      "MINE_collect",
+      "MINE_songList",
+      "MINE_history",
+    ]),
     songList() {
       if (this.navB === 1) return this.MINE_songList;
       if (this.navB === 2) return this.MINE_collect;
       if (this.navB === 3) return this.MINE_history;
     },
     colorRed() {
-      return (song) => {
+      return (song, type) => {
         if (
-          this.MINE_collect.some((item) => {
+          type.some((item) => {
             return item.mid === song.mid;
           })
         )
@@ -68,13 +91,62 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["setSinger", "setHIS_search", "setMINE_collect"]),
+    ...mapMutations([
+      "setSinger",
+      "setPlayList",
+      "setHIS_search",
+      "setMINE_collect",
+      "setMINE_songList",
+      "setMINE_history",
+    ]),
     ...mapActions(["playerGo"]),
+    clearAll() {
+      if (this.navB === 1) {
+        this.setMINE_songList([]);
+        storage.set("songList", []);
+      }
+      if (this.navB === 2) {
+        this.setMINE_collect([]);
+        storage.set("collect", []);
+      }
+      if (this.navB === 3) {
+        this.setMINE_history([]);
+        storage.set("history", []);
+      }
+    },
+    _setSongList(song) {
+      const songList = saveSearch(
+        "songList",
+        song,
+        (item) => item.audioUrl === song.audioUrl
+      );
+      this.setMINE_songList(songList);
+    },
+    deleteSong(key) {
+      const arr = this.songList;
+      arr.splice(key, 1);
+      if (this.navB === 1) {
+        storage.set("songList", arr);
+        this.setMINE_songList(arr);
+      }
+      if (this.navB === 3) {
+        storage.set("history", arr);
+        this.setMINE_history(arr);
+      }
+    },
     selectItem(item, key) {
+      if (this.navB === 1) this.setSinger("songList");
+      if (this.navB === 2) this.setSinger("collect");
+      if (this.navB === 3) this.setSinger("history");
       this.playerGo({
         song: item,
         index: key,
       });
+    },
+    search() {
+      if (this.$router.currentRoute.path !== "/search")
+        this.$router.push({ path: "/search" });
+      this.$parent.mineShow = false;
     },
     setCollect(song) {
       const collect = this.MINE_collect;
@@ -89,6 +161,12 @@ export default {
       } else collect.unshift(song);
       storage.set("collect", collect);
       this.setMINE_collect(collect);
+    },
+  },
+  watch: {
+    song() {
+      if (this.singer === "songList" || this.singer === "collect")
+        this.setPlayList(this.songList);
     },
   },
   components: {
@@ -164,7 +242,7 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        padding: 0 60px 0 17px;
+        padding: 0 90px 0 17px;
         position: relative;
         line-height: 38px;
         font-size: 13px;
@@ -176,6 +254,12 @@ export default {
           position: absolute;
           right: 12px;
           font-size: 16px;
+          &.red {
+            color: rgba(255, 187, 0, 0.6);
+          }
+          &.DH {
+            right: 68px;
+          }
         }
         .span {
           color: @color;
@@ -183,9 +267,6 @@ export default {
         }
         i {
           right: 38px;
-          &.red {
-            color: rgba(255, 187, 0, 0.6);
-          }
         }
       }
     }

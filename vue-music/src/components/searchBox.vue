@@ -6,6 +6,7 @@
       type="text"
       v-model="model"
       :placeholder="placeholder"
+      autofocus="autofocus"
     />
     <i v-show="model" class="iconfont iconx" @click="clear"></i>
   </div>

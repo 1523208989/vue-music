@@ -34,5 +34,8 @@ export default {
   },
   setMINE_history(state, item) {
     state.MINE_history=item
+  },
+  setMINE_songList(state, item) {
+    state.MINE_songList=item
   }
 }

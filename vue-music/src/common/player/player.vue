@@ -750,7 +750,7 @@ export default {
 
 #min_player {
   height: 65px;
-  background-color: rgb(40, 39, 61);
+  background-color:rgba(23, 23, 23);
   display: flex;
   justify-content: space-between;
   align-items: center;

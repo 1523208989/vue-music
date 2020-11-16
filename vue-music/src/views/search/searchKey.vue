@@ -30,10 +30,15 @@
             <i
               v-show="item.audioUrl"
               class="iconfont iconshoucang"
-              :class="{ red: colorRed(item) }"
+              :class="{ red: colorRed(item, MINE_collect) }"
               @click.stop="setCollect(item)"
             ></i>
-            <span v-show="item.audioUrl">+</span>
+            <span
+              v-show="item.audioUrl"
+              :class="{ red: colorRed(item, MINE_songList) }"
+              @click.stop="setSongList(item)"
+              >+</span
+            >
           </li>
           <li class="li" v-show="isPull">加载数据中...</li>
         </ul>
@@ -70,11 +75,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(["MINE_collect"]),
+    ...mapState(["MINE_collect", "MINE_songList"]),
     colorRed() {
-      return (song) => {
+      return (song, type) => {
         if (
-          this.MINE_collect.some((item) => {
+          type.some((item) => {
             return item.mid === song.mid;
           })
         )
@@ -84,9 +89,23 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["setSinger", "setHIS_search",'setMINE_collect']),
+    ...mapMutations([
+      "setSinger",
+      "setPlayList",
+      "setHIS_search",
+      "setMINE_collect",
+      "setMINE_songList",
+    ]),
     ...mapActions(["playerGo"]),
-        setCollect(song) {
+    setSongList(song) {
+      const songList = saveSearch(
+        "songList",
+        song,
+        (item) => item.audioUrl === song.audioUrl
+      );
+      this.setMINE_songList(songList);
+    },
+    setCollect(song) {
       const collect = this.MINE_collect;
       let key = -1;
       if (
@@ -112,12 +131,13 @@ export default {
       });
     },
     selectSinger(item) {
-      saveSearch("search", this.model, 6);
+      saveSearch("search", this.model, (item) => item === this.model, 9);
       this.$router.push({ path: `/search/${item.singerMID}` });
       this.setSinger(item);
     },
     selectItem(item, key) {
-      saveSearch("search", this.model, (item) => item === this.model, 6);
+      this.setPlayList([]);
+      saveSearch("search", this.model, (item) => item === this.model, 9);
       this.setSinger("来自搜索");
       this.playerGo({
         song: item,
@@ -236,6 +256,9 @@ export default {
         position: absolute;
         right: 12px;
         font-size: 16px;
+        &.red {
+          color: rgba(255, 187, 0, 0.6);
+        }
       }
       .span {
         color: @color;
